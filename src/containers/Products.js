@@ -4,31 +4,31 @@ import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import config from "../config";
-import "./Notes.css";
+import "./Products.css";
 
-export default function Notes(props) {
+export default function Products(props) {
   const file = useRef(null);
-  const [note, setNote] = useState(null);
-  const [content, setContent] = useState("");
+  const [product, setProduct] = useState(null);
+  const [productName, setProductName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    function loadNote() {
-      return API.get("notes", `/notes/${props.match.params.id}`);
+    function loadProduct() {
+      return API.get("products", `/products/${props.match.params.id}`);
     }
 
     async function onLoad() {
       try {
-        const note = await loadNote();
-        const { content, attachment } = note;
+        const product = await loadProduct();
+        const { productName, productPhoto } = product;
 
-        if (attachment) {
-          note.attachmentURL = await Storage.vault.get(attachment);
+        if (productPhoto) {
+          product.productPhotoURL = await Storage.vault.get(productPhoto);
         }
 
-        setContent(content);
-        setNote(note);
+        setProductName(productName);
+        setProduct(product);
       } catch (e) {
         alert(e);
       }
@@ -38,7 +38,7 @@ export default function Notes(props) {
   }, [props.match.params.id]);
 
   function validateForm() {
-    return content.length > 0;
+    return productName.length > 0;
   }
 
   function formatFilename(str) {
@@ -49,14 +49,14 @@ export default function Notes(props) {
     file.current = event.target.files[0];
   }
 
-  function saveNote(note) {
-    return API.put("notes", `/notes/${props.match.params.id}`, {
-      body: note
+  function saveProduct(product) {
+    return API.put("products", `/products/${props.match.params.id}`, {
+      body: product
     });
   }
 
   async function handleSubmit(event) {
-    let attachment;
+    let productPhoto;
 
     event.preventDefault();
 
@@ -72,12 +72,12 @@ export default function Notes(props) {
 
     try {
       if (file.current) {
-        attachment = await s3Upload(file.current);
+        productPhoto = await s3Upload(file.current);
       }
 
-      await saveNote({
-        content,
-        attachment: attachment || note.attachment
+      await saveProduct({
+        productName,
+        productPhoto: productPhoto || product.productPhoto
       });
       props.history.push("/");
     } catch (e) {
@@ -86,15 +86,15 @@ export default function Notes(props) {
     }
   }
 
-  function deleteNote() {
-    return API.del("notes", `/notes/${props.match.params.id}`);
+  function deleteProduct() {
+    return API.del("products", `/products/${props.match.params.id}`);
   }
 
   async function handleDelete(event) {
     event.preventDefault();
 
     const confirmed = window.confirm(
-      "Are you sure you want to delete this note?"
+      "Are you sure you want to delete this product?"
     );
 
     if (!confirmed) {
@@ -104,7 +104,7 @@ export default function Notes(props) {
     setIsDeleting(true);
 
     try {
-      await deleteNote();
+      await deleteProduct();
       props.history.push("/");
     } catch (e) {
       alert(e);
@@ -113,32 +113,33 @@ export default function Notes(props) {
   }
 
   return (
-    <div className="Notes">
-      {note && (
+    <div className="Products">
+      {product && (
         <form onSubmit={handleSubmit}>
-          <FormGroup controlId="content">
+          <FormGroup controlId="productName">
+            <ControlLabel>Name</ControlLabel>
             <FormControl
-              value={content}
+              value={productName}
               componentClass="textarea"
-              onChange={e => setContent(e.target.value)}
+              onChange={e => setProductName(e.target.value)}
             />
           </FormGroup>
-          {note.attachment && (
+          {product.productPhoto && (
             <FormGroup>
-              <ControlLabel>Attachment</ControlLabel>
+              <ControlLabel>Photo</ControlLabel>
               <FormControl.Static>
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={note.attachmentURL}
+                  href={product.productPhotoURL}
                 >
-                  {formatFilename(note.attachment)}
+                  {formatFilename(product.productPhoto)}
                 </a>
               </FormControl.Static>
             </FormGroup>
           )}
           <FormGroup controlId="file">
-            {!note.attachment && <ControlLabel>Attachment</ControlLabel>}
+            {!product.productPhoto && <ControlLabel>Photo</ControlLabel>}
             <FormControl onChange={handleFileChange} type="file" />
           </FormGroup>
           <LoaderButton

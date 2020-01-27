@@ -1,36 +1,34 @@
 const dev = {
-  STRIPE_KEY: "pk_test_v1amvR35uoCNduJfkqGB8RLD",
   s3: {
     REGION: "us-east-1",
-    BUCKET: "notes-app-2-api-dev-attachmentsbucket-6wbhcogxihbo"
+    BUCKET: "green-blue-and-kind-api-dev-attachmentsbucket-29s444udnid4"
   },
   apiGateway: {
     REGION: "us-east-1",
-    URL: "https://api.serverless-stack.seed-demo.club/dev"
+    URL: "https://qwppkge4a7.execute-api.us-east-1.amazonaws.com/dev"
   },
   cognito: {
     REGION: "us-east-1",
-    USER_POOL_ID: "us-east-1_yKOQs2dWK",
-    APP_CLIENT_ID: "1h0r8s763vnqj4id6dvguanp8f",
-    IDENTITY_POOL_ID: "us-east-1:dedfd34a-9d7e-4bf2-a1dd-ef603bac2ecb"
+    USER_POOL_ID: "us-east-1_SEHnYlJPv",
+    APP_CLIENT_ID: "3le7ad7p8t4d50hbsqjnajjsnj",
+    IDENTITY_POOL_ID: "us-east-1:128f9f37-325c-4f00-9c74-f40b7e43b327"
   }
 };
 
 const prod = {
-  STRIPE_KEY: "pk_test_v1amvR35uoCNduJfkqGB8RLD",
   s3: {
     REGION: "us-east-1",
-    BUCKET: "notes-app-2-api-prod-attachmentsbucket-1h5n5ttet1hy0"
+    BUCKET: "green-blue-and-kind-api-prod-attachmentsbucket-e94p4wcvi3xw"
   },
   apiGateway: {
     REGION: "us-east-1",
-    URL: "https://api.serverless-stack.seed-demo.club/prod"
+    URL: "https://3jw0egh7y8.execute-api.us-east-1.amazonaws.com/prod"
   },
   cognito: {
     REGION: "us-east-1",
-    USER_POOL_ID: "us-east-1_TwYpMXIJH",
-    APP_CLIENT_ID: "6kfg0o7qo2i3ndk2ur906sc5fd",
-    IDENTITY_POOL_ID: "us-east-1:f4c754b4-24f0-4754-8596-30afedece1fc"
+    USER_POOL_ID: "us-east-1_RuMYAj0Tt",
+    APP_CLIENT_ID: "7bqsfcmeek0hghv6pl4g5j306s",
+    IDENTITY_POOL_ID: "us-east-1:0c94fde4-d85b-4c11-8afb-f2612ea6cf77"
   }
 };
 

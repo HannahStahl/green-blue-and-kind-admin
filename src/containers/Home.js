@@ -5,7 +5,7 @@ import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
 import "./Home.css";
 
 export default function Home(props) {
-  const [notes, setNotes] = useState([]);
+  const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -15,8 +15,8 @@ export default function Home(props) {
       }
 
       try {
-        const notes = await loadNotes();
-        setNotes(notes);
+        const products = await loadProducts();
+        setProducts(products);
       } catch (e) {
         alert(e);
       }
@@ -27,23 +27,23 @@ export default function Home(props) {
     onLoad();
   }, [props.isAuthenticated]);
 
-  function loadNotes() {
-    return API.get("notes", "/notes");
+  function loadProducts() {
+    return API.get("products", "/products");
   }
 
-  function renderNotesList(notes) {
-    return [{}].concat(notes).map((note, i) =>
+  function renderProductsList(products) {
+    return [{}].concat(products).map((product, i) =>
       i !== 0 ? (
-        <LinkContainer key={note.noteId} to={`/notes/${note.noteId}`}>
-          <ListGroupItem header={note.content.trim().split("\n")[0]}>
-            {"Created: " + new Date(note.createdAt).toLocaleString()}
+        <LinkContainer key={product.productId} to={`/products/${product.productId}`}>
+          <ListGroupItem header={product.productName.trim().split("\n")[0]}>
+            {"Created: " + new Date(product.createdAt).toLocaleString()}
           </ListGroupItem>
         </LinkContainer>
       ) : (
-        <LinkContainer key="new" to="/notes/new">
+        <LinkContainer key="new" to="/products/new">
           <ListGroupItem>
             <h4>
-              <b>{"\uFF0B"}</b> Create a new note
+              <b>{"\uFF0B"}</b> Create a new product
             </h4>
           </ListGroupItem>
         </LinkContainer>
@@ -54,18 +54,17 @@ export default function Home(props) {
   function renderLander() {
     return (
       <div className="lander">
-        <h1>Scratch</h1>
-        <p>A simple note taking app</p>
+        <h1>Product Management Console</h1>
       </div>
     );
   }
 
-  function renderNotes() {
+  function renderProducts() {
     return (
-      <div className="notes">
-        <PageHeader>Your Notes</PageHeader>
+      <div className="products">
+        <PageHeader>Your Products</PageHeader>
         <ListGroup>
-          {!isLoading && renderNotesList(notes)}
+          {!isLoading && renderProductsList(products)}
         </ListGroup>
       </div>
     );
@@ -73,7 +72,7 @@ export default function Home(props) {
 
   return (
     <div className="Home">
-      {props.isAuthenticated ? renderNotes() : renderLander()}
+      {props.isAuthenticated ? renderProducts() : renderLander()}
     </div>
   );
 }

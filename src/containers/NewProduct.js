@@ -4,15 +4,15 @@ import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import config from "../config";
-import "./NewNote.css";
+import "./NewProduct.css";
 
-export default function NewNote(props) {
+export default function NewProduct(props) {
   const file = useRef(null);
-  const [content, setContent] = useState("");
+  const [productName, setProductName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   function validateForm() {
-    return content.length > 0;
+    return productName.length > 0;
   }
 
   function handleFileChange(event) {
@@ -33,11 +33,11 @@ export default function NewNote(props) {
     setIsLoading(true);
 
     try {
-      const attachment = file.current
+      const productPhoto = file.current
         ? await s3Upload(file.current)
         : null;
 
-      await createNote({ content, attachment });
+      await createProduct({ productName, productPhoto });
       props.history.push("/");
     } catch (e) {
       alert(e);
@@ -45,24 +45,26 @@ export default function NewNote(props) {
     }
   }
 
-  function createNote(note) {
-    return API.post("notes", "/notes", {
-      body: note
+  function createProduct(product) {
+    console.log(product);
+    return API.post("products", "/products", {
+      body: product
     });
   }
 
   return (
-    <div className="NewNote">
+    <div className="NewProduct">
       <form onSubmit={handleSubmit}>
-        <FormGroup controlId="content">
+        <FormGroup controlId="productName">
+          <ControlLabel>Name</ControlLabel>
           <FormControl
-            value={content}
+            value={productName}
             componentClass="textarea"
-            onChange={e => setContent(e.target.value)}
+            onChange={e => setProductName(e.target.value)}
           />
         </FormGroup>
         <FormGroup controlId="file">
-          <ControlLabel>Attachment</ControlLabel>
+          <ControlLabel>Photo</ControlLabel>
           <FormControl onChange={handleFileChange} type="file" />
         </FormGroup>
         <LoaderButton
