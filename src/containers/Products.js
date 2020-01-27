@@ -10,6 +10,11 @@ export default function Products(props) {
   const file = useRef(null);
   const [product, setProduct] = useState(null);
   const [productName, setProductName] = useState("");
+  const [productDescription, setProductDescription] = useState("");
+  const [productPrice, setProductPrice] = useState("");
+  const [productSalePrice, setProductSalePrice] = useState("");
+  const [productSizes, setProductSizes] = useState("");
+  const [productColors, setProductColors] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -21,13 +26,26 @@ export default function Products(props) {
     async function onLoad() {
       try {
         const product = await loadProduct();
-        const { productName, productPhoto } = product;
+        const {
+          productName,
+          productDescription,
+          productPrice,
+          productSalePrice,
+          productSizes,
+          productColors,
+          productPhoto,
+        } = product;
 
         if (productPhoto) {
           product.productPhotoURL = await Storage.vault.get(productPhoto);
         }
 
-        setProductName(productName);
+        setProductName(productName || "");
+        setProductDescription(productDescription || "");
+        setProductPrice(productPrice || "");
+        setProductSalePrice(productSalePrice || "");
+        setProductSizes(productSizes || "");
+        setProductColors(productColors || "");
         setProduct(product);
       } catch (e) {
         alert(e);
@@ -38,7 +56,13 @@ export default function Products(props) {
   }, [props.match.params.id]);
 
   function validateForm() {
-    return productName.length > 0;
+    return (
+      productName.length > 0
+      && productDescription.length > 0
+      && productPrice.length > 0
+      && productSizes.length > 0
+      && productColors.length > 0
+    );
   }
 
   function formatFilename(str) {
@@ -77,6 +101,11 @@ export default function Products(props) {
 
       await saveProduct({
         productName,
+        productDescription,
+        productPrice,
+        productSalePrice,
+        productSizes,
+        productColors,
         productPhoto: productPhoto || product.productPhoto
       });
       props.history.push("/");
@@ -120,8 +149,48 @@ export default function Products(props) {
             <ControlLabel>Name</ControlLabel>
             <FormControl
               value={productName}
-              componentClass="textarea"
+              type="text"
               onChange={e => setProductName(e.target.value)}
+            />
+          </FormGroup>
+          <FormGroup controlId="productDescription">
+            <ControlLabel>Description</ControlLabel>
+            <FormControl
+              value={productDescription}
+              componentClass="textarea"
+              onChange={e => setProductDescription(e.target.value)}
+            />
+          </FormGroup>
+          <FormGroup controlId="productPrice">
+            <ControlLabel>Price</ControlLabel>
+            <FormControl
+              value={productPrice}
+              type="number"
+              onChange={e => setProductPrice(e.target.value)}
+            />
+          </FormGroup>
+          <FormGroup controlId="productSalePrice">
+            <ControlLabel>Sale Price</ControlLabel>
+            <FormControl
+              value={productSalePrice}
+              type="number"
+              onChange={e => setProductSalePrice(e.target.value)}
+            />
+          </FormGroup>
+          <FormGroup controlId="productSizes">
+            <ControlLabel>Sizes</ControlLabel>
+            <FormControl
+              value={productSizes}
+              type="text"
+              onChange={e => setProductSizes(e.target.value)}
+            />
+          </FormGroup>
+          <FormGroup controlId="productColors">
+            <ControlLabel>Colors</ControlLabel>
+            <FormControl
+              value={productColors}
+              type="text"
+              onChange={e => setProductColors(e.target.value)}
             />
           </FormGroup>
           {product.productPhoto && (

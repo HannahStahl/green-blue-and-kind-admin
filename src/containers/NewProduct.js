@@ -9,10 +9,21 @@ import "./NewProduct.css";
 export default function NewProduct(props) {
   const file = useRef(null);
   const [productName, setProductName] = useState("");
+  const [productDescription, setProductDescription] = useState("");
+  const [productPrice, setProductPrice] = useState("");
+  const [productSalePrice, setProductSalePrice] = useState("");
+  const [productSizes, setProductSizes] = useState("");
+  const [productColors, setProductColors] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   function validateForm() {
-    return productName.length > 0;
+    return (
+      productName.length > 0
+      && productDescription.length > 0
+      && productPrice.length > 0
+      && productSizes.length > 0
+      && productColors.length > 0
+    );
   }
 
   function handleFileChange(event) {
@@ -37,7 +48,15 @@ export default function NewProduct(props) {
         ? await s3Upload(file.current)
         : null;
 
-      await createProduct({ productName, productPhoto });
+      await createProduct({
+        productName,
+        productDescription,
+        productPrice,
+        productSalePrice,
+        productSizes,
+        productColors,
+        productPhoto,
+      });
       props.history.push("/");
     } catch (e) {
       alert(e);
@@ -46,7 +65,6 @@ export default function NewProduct(props) {
   }
 
   function createProduct(product) {
-    console.log(product);
     return API.post("products", "/products", {
       body: product
     });
@@ -59,8 +77,48 @@ export default function NewProduct(props) {
           <ControlLabel>Name</ControlLabel>
           <FormControl
             value={productName}
-            componentClass="textarea"
+            type="text"
             onChange={e => setProductName(e.target.value)}
+          />
+        </FormGroup>
+        <FormGroup controlId="productDescription">
+          <ControlLabel>Description</ControlLabel>
+          <FormControl
+            value={productDescription}
+            componentClass="textarea"
+            onChange={e => setProductDescription(e.target.value)}
+          />
+        </FormGroup>
+        <FormGroup controlId="productPrice">
+          <ControlLabel>Price</ControlLabel>
+          <FormControl
+            value={productPrice}
+            type="number"
+            onChange={e => setProductPrice(e.target.value)}
+          />
+        </FormGroup>
+        <FormGroup controlId="productSalePrice">
+          <ControlLabel>Sale Price</ControlLabel>
+          <FormControl
+            value={productSalePrice}
+            type="number"
+            onChange={e => setProductSalePrice(e.target.value)}
+          />
+        </FormGroup>
+        <FormGroup controlId="productSizes">
+          <ControlLabel>Sizes</ControlLabel>
+          <FormControl
+            value={productSizes}
+            type="text"
+            onChange={e => setProductSizes(e.target.value)}
+          />
+        </FormGroup>
+        <FormGroup controlId="productColors">
+          <ControlLabel>Colors</ControlLabel>
+          <FormControl
+            value={productColors}
+            type="text"
+            onChange={e => setProductColors(e.target.value)}
           />
         </FormGroup>
         <FormGroup controlId="file">
