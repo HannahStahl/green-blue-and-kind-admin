@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import { API } from "aws-amplify";
-import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import {
+  FormGroup, FormControl, ControlLabel, Checkbox,
+} from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import config from "../config";
@@ -12,6 +14,7 @@ export default function NewProduct(props) {
   const [productDescription, setProductDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
   const [productSalePrice, setProductSalePrice] = useState("");
+  const [productOnSale, setProductOnSale] = useState(false);
   const [productSizes, setProductSizes] = useState("");
   const [productColors, setProductColors] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +23,8 @@ export default function NewProduct(props) {
     return (
       productName.length > 0
       && productDescription.length > 0
-      && productPrice.length > 0
+      && productPrice > 0
+      && (!productOnSale || productSalePrice > 0)
       && productSizes.length > 0
       && productColors.length > 0
     );
@@ -53,6 +57,7 @@ export default function NewProduct(props) {
         productDescription,
         productPrice,
         productSalePrice,
+        productOnSale,
         productSizes,
         productColors,
         productPhoto,
@@ -105,6 +110,14 @@ export default function NewProduct(props) {
             onChange={e => setProductSalePrice(e.target.value)}
           />
         </FormGroup>
+        <FormGroup controlId="productOnSale">
+            <Checkbox
+              checked={productOnSale}
+              onChange={e => setProductOnSale(e.target.checked)}
+            >
+              On Sale
+            </Checkbox>
+          </FormGroup>
         <FormGroup controlId="productSizes">
           <ControlLabel>Sizes</ControlLabel>
           <FormControl
