@@ -3,6 +3,7 @@ import { API, Storage } from "aws-amplify";
 import {
   FormGroup, FormControl, ControlLabel, Checkbox,
 } from "react-bootstrap";
+import CreatableSelect from 'react-select/creatable';
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import config from "../config";
@@ -16,27 +17,37 @@ export default function Products(props) {
   const [productPrice, setProductPrice] = useState("");
   const [productSalePrice, setProductSalePrice] = useState("");
   const [productOnSale, setProductOnSale] = useState(false);
-  const [productSizes, setProductSizes] = useState("");
-  const [productColors, setProductColors] = useState("");
+  const [productSizes, setProductSizes] = useState([]);
+  const [productColors, setProductColors] = useState([]);
+  const [productTags, setProductTags] = useState([]);
+  const [tagOptions, setTagOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     function loadProduct() {
-      return API.get("products", `/products/${props.match.params.id}`);
+      return API.get("gbk-api", `/products/${props.match.params.id}`);
     }
+
+    function loadTags() {
+      return API.get("gbk-api", `/tags`);
+    }
+
+    function loadTagsForProduct() {
+      return API.get("gbk-api", `/productsToTags/${props.match.params.id}`);
+    }
+
+    // TODO load sizes and colors too
 
     async function onLoad() {
       try {
-        const product = await loadProduct();
+        const [product, tags, tagsForProduct] = await Promise.all([loadProduct(), loadTags(), loadTagsForProduct()]);
         const {
           productName,
           productDescription,
           productPrice,
           productSalePrice,
           productOnSale,
-          productSizes,
-          productColors,
           productPhoto,
         } = product;
 
@@ -49,9 +60,18 @@ export default function Products(props) {
         setProductPrice(productPrice || "");
         setProductSalePrice(productSalePrice || "");
         setProductOnSale(productOnSale || "");
-        setProductSizes(productSizes || "");
-        setProductColors(productColors || "");
         setProduct(product);
+
+        const tagOptions = tags.map(tag => ({
+          value: tag.tagId,
+          label: tag.tagName,
+        }));
+        setTagOptions(tagOptions);
+        const selectedTagOptions = tagsForProduct.map(tagForProduct => ({
+          value: tagForProduct.tagId,
+          label: tags.find(tag => tag.tagId === tagForProduct.tagId).tagName,
+        }));
+        setProductTags(selectedTagOptions);
       } catch (e) {
         alert(e);
       }
@@ -66,8 +86,8 @@ export default function Products(props) {
       && productDescription.length > 0
       && productPrice > 0
       && (!productOnSale || productSalePrice > 0)
-      && productSizes.length > 0
-      && productColors.length > 0
+      // && productSizes.length > 0 // TODO add these back in
+      // && productColors.length > 0
     );
   }
 
@@ -80,8 +100,17 @@ export default function Products(props) {
   }
 
   function saveProduct(product) {
-    return API.put("products", `/products/${props.match.params.id}`, {
+    return API.put("gbk-api", `/products/${props.match.params.id}`, {
       body: product
+    });
+  }
+
+  async function saveTags() {
+    return API.post("gbk-api", `/tags`, {
+      body: {
+        productId: props.match.params.id,
+        selectedTagIds: productTags ? productTags.map(tag => tag.value) : [],
+      }
     });
   }
 
@@ -105,16 +134,17 @@ export default function Products(props) {
         productPhoto = await s3Upload(file.current);
       }
 
-      await saveProduct({
-        productName,
-        productDescription,
-        productPrice,
-        productSalePrice,
-        productOnSale,
-        productSizes,
-        productColors,
-        productPhoto: productPhoto || product.productPhoto
-      });
+      await Promise.all([
+        saveProduct({
+          productName,
+          productDescription: productDescription !== "" ? productDescription : undefined,
+          productPrice: productPrice !== "" ? productPrice : undefined,
+          productSalePrice: productSalePrice !== "" ? productSalePrice : undefined,
+          productOnSale,
+          productPhoto: productPhoto || product.productPhoto
+        }),
+        saveTags(),
+      ]);
       props.history.push("/");
     } catch (e) {
       alert(e);
@@ -123,7 +153,7 @@ export default function Products(props) {
   }
 
   function deleteProduct() {
-    return API.del("products", `/products/${props.match.params.id}`);
+    return API.del("gbk-api", `/products/${props.match.params.id}`);
   }
 
   async function handleDelete(event) {
@@ -194,18 +224,32 @@ export default function Products(props) {
           </FormGroup>
           <FormGroup controlId="productSizes">
             <ControlLabel>Sizes</ControlLabel>
-            <FormControl
+            <CreatableSelect
+              isMulti
+              onChange={setProductSizes}
+              options={[]} // TODO
+              placeholder=""
               value={productSizes}
-              type="text"
-              onChange={e => setProductSizes(e.target.value)}
             />
           </FormGroup>
           <FormGroup controlId="productColors">
             <ControlLabel>Colors</ControlLabel>
-            <FormControl
+            <CreatableSelect
+              isMulti
+              onChange={setProductColors}
+              options={[]} // TODO
+              placeholder=""
               value={productColors}
-              type="text"
-              onChange={e => setProductColors(e.target.value)}
+            />
+          </FormGroup>
+          <FormGroup controlId="productTags">
+            <ControlLabel>Tags</ControlLabel>
+            <CreatableSelect
+              isMulti
+              onChange={setProductTags}
+              options={tagOptions}
+              placeholder=""
+              value={productTags}
             />
           </FormGroup>
           {product.productPhoto && (

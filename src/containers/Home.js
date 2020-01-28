@@ -28,7 +28,7 @@ export default function Home(props) {
   }, [props.isAuthenticated]);
 
   function loadProducts() {
-    return API.get("products", "/products");
+    return API.get("gbk-api", "/products");
   }
 
   function renderProductsList(products) {

@@ -1,8 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { API } from "aws-amplify";
 import {
   FormGroup, FormControl, ControlLabel, Checkbox,
 } from "react-bootstrap";
+import CreatableSelect from 'react-select/creatable';
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import config from "../config";
@@ -15,9 +16,34 @@ export default function NewProduct(props) {
   const [productPrice, setProductPrice] = useState("");
   const [productSalePrice, setProductSalePrice] = useState("");
   const [productOnSale, setProductOnSale] = useState(false);
-  const [productSizes, setProductSizes] = useState("");
-  const [productColors, setProductColors] = useState("");
+  const [productSizes, setProductSizes] = useState([]);
+  const [productColors, setProductColors] = useState([]);
+  const [productTags, setProductTags] = useState([]);
+  const [tagOptions, setTagOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    function loadTags() {
+      return API.get("gbk-api", `/tags`);
+    }
+
+    // TODO load sizes and colors too
+
+    async function onLoad() {
+      try {
+        const tags = await loadTags();
+        const tagOptions = tags.map(tag => ({
+          value: tag.tagId,
+          label: tag.tagName,
+        }));
+        setTagOptions(tagOptions);
+      } catch (e) {
+        alert(e);
+      }
+    }
+
+    onLoad();
+  });
 
   function validateForm() {
     return (
@@ -25,8 +51,8 @@ export default function NewProduct(props) {
       && productDescription.length > 0
       && productPrice > 0
       && (!productOnSale || productSalePrice > 0)
-      && productSizes.length > 0
-      && productColors.length > 0
+      // && productSizes.length > 0 // TODO add these back in
+      // && productColors.length > 0
     );
   }
 
@@ -52,16 +78,15 @@ export default function NewProduct(props) {
         ? await s3Upload(file.current)
         : null;
 
-      await createProduct({
+      const newProduct = await createProduct({
         productName,
-        productDescription,
-        productPrice,
-        productSalePrice,
+        productDescription: productDescription !== "" ? productDescription : undefined,
+        productPrice: productPrice !== "" ? productPrice : undefined,
+        productSalePrice: productSalePrice !== "" ? productSalePrice : undefined,
         productOnSale,
-        productSizes,
-        productColors,
         productPhoto,
       });
+      await saveTags(newProduct.productId);
       props.history.push("/");
     } catch (e) {
       alert(e);
@@ -70,8 +95,17 @@ export default function NewProduct(props) {
   }
 
   function createProduct(product) {
-    return API.post("products", "/products", {
+    return API.post("gbk-api", "/products", {
       body: product
+    });
+  }
+
+  async function saveTags(productId) {
+    return API.post("gbk-api", `/tags`, {
+      body: {
+        productId,
+        selectedTagIds: productTags ? productTags.map(tag => tag.value) : [],
+      }
     });
   }
 
@@ -120,18 +154,32 @@ export default function NewProduct(props) {
           </FormGroup>
         <FormGroup controlId="productSizes">
           <ControlLabel>Sizes</ControlLabel>
-          <FormControl
+          <CreatableSelect
+            isMulti
+            onChange={setProductSizes}
+            options={[]} // TODO
+            placeholder=""
             value={productSizes}
-            type="text"
-            onChange={e => setProductSizes(e.target.value)}
           />
         </FormGroup>
         <FormGroup controlId="productColors">
           <ControlLabel>Colors</ControlLabel>
-          <FormControl
+          <CreatableSelect
+            isMulti
+            onChange={setProductColors}
+            options={[]} // TODO
+            placeholder=""
             value={productColors}
-            type="text"
-            onChange={e => setProductColors(e.target.value)}
+          />
+        </FormGroup>
+        <FormGroup controlId="productTags">
+          <ControlLabel>Tags</ControlLabel>
+          <CreatableSelect
+            isMulti
+            onChange={setProductTags}
+            options={tagOptions}
+            placeholder=""
+            value={productTags}
           />
         </FormGroup>
         <FormGroup controlId="file">
