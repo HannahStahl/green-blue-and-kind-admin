@@ -19,6 +19,7 @@ export default function Products(props) {
   const [productOnSale, setProductOnSale] = useState(false);
   const [productSizes, setProductSizes] = useState([]);
   const [productColors, setProductColors] = useState([]);
+  const [colorOptions, setColorOptions] = useState([]);
   const [productTags, setProductTags] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,18 +31,30 @@ export default function Products(props) {
     }
 
     function loadTags() {
-      return API.get("gbk-api", `/tags`);
+      return API.get("gbk-api", "/tags");
     }
 
     function loadTagsForProduct() {
       return API.get("gbk-api", `/productsToTags/${props.match.params.id}`);
     }
 
-    // TODO load sizes and colors too
+    function loadColors() {
+      return API.get("gbk-api", "/colors");
+    }
+
+    function loadColorsForProduct() {
+      return API.get("gbk-api", `/productsToColors/${props.match.params.id}`);
+    }
+
+    // TODO load sizes too
 
     async function onLoad() {
       try {
-        const [product, tags, tagsForProduct] = await Promise.all([loadProduct(), loadTags(), loadTagsForProduct()]);
+        const [
+          product, tags, tagsForProduct, colors, colorsForProduct,
+        ] = await Promise.all([
+          loadProduct(), loadTags(), loadTagsForProduct(), loadColors(), loadColorsForProduct(),
+        ]);
         const {
           productName,
           productDescription,
@@ -72,6 +85,17 @@ export default function Products(props) {
           label: tags.find(tag => tag.tagId === tagForProduct.tagId).tagName,
         }));
         setProductTags(selectedTagOptions);
+
+        const colorOptions = colors.map(color => ({
+          value: color.colorId,
+          label: color.colorName,
+        }));
+        setColorOptions(colorOptions);
+        const selectedColorOptions = colorsForProduct.map(colorForProduct => ({
+          value: colorForProduct.colorId,
+          label: colors.find(color => color.colorId === colorForProduct.colorId).colorName,
+        }));
+        setProductColors(selectedColorOptions);
       } catch (e) {
         alert(e);
       }
@@ -86,8 +110,8 @@ export default function Products(props) {
       && productDescription.length > 0
       && productPrice > 0
       && (!productOnSale || productSalePrice > 0)
-      // && productSizes.length > 0 // TODO add these back in
-      // && productColors.length > 0
+      // && productSizes.length > 0 // TODO add this back in
+      && productColors.length > 0
     );
   }
 
@@ -106,10 +130,19 @@ export default function Products(props) {
   }
 
   async function saveTags() {
-    return API.post("gbk-api", `/tags`, {
+    return API.post("gbk-api", "/tags", {
       body: {
+        selectedIds: productTags ? productTags.map(tag => tag.value) : [],
         productId: props.match.params.id,
-        selectedTagIds: productTags ? productTags.map(tag => tag.value) : [],
+      }
+    });
+  }
+
+  async function saveColors() {
+    return API.post("gbk-api", "/colors", {
+      body: {
+        selectedIds: productColors ? productColors.map(color => color.value) : [],
+        productId: props.match.params.id,
       }
     });
   }
@@ -144,6 +177,7 @@ export default function Products(props) {
           productPhoto: productPhoto || product.productPhoto
         }),
         saveTags(),
+        saveColors(),
       ]);
       props.history.push("/");
     } catch (e) {
@@ -237,7 +271,7 @@ export default function Products(props) {
             <CreatableSelect
               isMulti
               onChange={setProductColors}
-              options={[]} // TODO
+              options={colorOptions}
               placeholder=""
               value={productColors}
             />

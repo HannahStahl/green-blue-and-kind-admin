@@ -18,25 +18,35 @@ export default function NewProduct(props) {
   const [productOnSale, setProductOnSale] = useState(false);
   const [productSizes, setProductSizes] = useState([]);
   const [productColors, setProductColors] = useState([]);
+  const [colorOptions, setColorOptions] = useState([]);
   const [productTags, setProductTags] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     function loadTags() {
-      return API.get("gbk-api", `/tags`);
+      return API.get("gbk-api", "/tags");
     }
 
-    // TODO load sizes and colors too
+    function loadColors() {
+      return API.get("gbk-api", "/colors");
+    }
+
+    // TODO load sizes too
 
     async function onLoad() {
       try {
-        const tags = await loadTags();
+        const [tags, colors] = await Promise.all([loadTags(), loadColors()]);
         const tagOptions = tags.map(tag => ({
           value: tag.tagId,
           label: tag.tagName,
         }));
         setTagOptions(tagOptions);
+        const colorOptions = colors.map(color => ({
+          value: color.colorId,
+          label: color.colorName,
+        }));
+        setColorOptions(colorOptions);
       } catch (e) {
         alert(e);
       }
@@ -51,8 +61,8 @@ export default function NewProduct(props) {
       && productDescription.length > 0
       && productPrice > 0
       && (!productOnSale || productSalePrice > 0)
-      // && productSizes.length > 0 // TODO add these back in
-      // && productColors.length > 0
+      // && productSizes.length > 0 // TODO add this back in
+      && productColors.length > 0
     );
   }
 
@@ -86,7 +96,7 @@ export default function NewProduct(props) {
         productOnSale,
         productPhoto,
       });
-      await saveTags(newProduct.productId);
+      await Promise.all([saveTags(newProduct.productId), saveColors(newProduct.productId)]);
       props.history.push("/");
     } catch (e) {
       alert(e);
@@ -101,10 +111,19 @@ export default function NewProduct(props) {
   }
 
   async function saveTags(productId) {
-    return API.post("gbk-api", `/tags`, {
+    return API.post("gbk-api", "/tags", {
       body: {
+        selectedIds: productTags ? productTags.map(tag => tag.value) : [],
         productId,
-        selectedTagIds: productTags ? productTags.map(tag => tag.value) : [],
+      }
+    });
+  }
+
+  async function saveColors(productId) {
+    return API.post("gbk-api", "/colors", {
+      body: {
+        selectedIds: productColors ? productColors.map(color => color.value) : [],
+        productId,
       }
     });
   }
@@ -167,7 +186,7 @@ export default function NewProduct(props) {
           <CreatableSelect
             isMulti
             onChange={setProductColors}
-            options={[]} // TODO
+            options={colorOptions}
             placeholder=""
             value={productColors}
           />
