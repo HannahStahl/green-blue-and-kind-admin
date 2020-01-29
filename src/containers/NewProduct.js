@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { API } from "aws-amplify";
 import {
   FormGroup, FormControl, ControlLabel, Checkbox,
@@ -8,9 +8,9 @@ import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import config from "../config";
 import "./NewProduct.css";
+import PhotoViewer from '../components/PhotoViewer';
 
 export default function NewProduct(props) {
-  const file = useRef(null);
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
@@ -23,7 +23,6 @@ export default function NewProduct(props) {
   const [productTags, setProductTags] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
   const [productPhotos, setProductPhotos] = useState([]);
-  const [photoURLs, setPhotoURLs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -39,14 +38,10 @@ export default function NewProduct(props) {
       return API.get("gbk-api", "/sizes");
     }
 
-    function loadPhotos() {
-      return API.get("gbk-api", "/photos");
-    }
-
     async function onLoad() {
       try {
-        const [tags, colors, sizes, photos] = await Promise.all([
-          loadTags(), loadColors(), loadSizes(), loadPhotos(),
+        const [tags, colors, sizes] = await Promise.all([
+          loadTags(), loadColors(), loadSizes(),
         ]);
         const tagOptions = tags.map(tag => ({
           value: tag.tagId,
@@ -84,10 +79,6 @@ export default function NewProduct(props) {
     );
   }
 
-  function formatFilename(str) {
-    return str.replace(/^\w+-/, "");
-  }
-
   function handleFileChange(event) {
     setProductPhotos(productPhotos.concat(Array.from(event.target.files)));
   }
@@ -95,6 +86,9 @@ export default function NewProduct(props) {
   async function handleSubmit(event) {
     event.preventDefault();
 
+    let updatedProductPhotos = productPhotos.map(productPhoto => ({
+      name: productPhoto.name, url: productPhoto.url,
+    }));
     if (productPhotos.length > 0) {
       const photoUploadPromises = [];
       productPhotos.forEach((productPhoto) => {
@@ -112,9 +106,10 @@ export default function NewProduct(props) {
       const photoURLs = await Promise.all(photoUploadPromises);
       let photoURLsIndex = 0;
       productPhotos.forEach((productPhoto, index) => {
-        productPhotos[index] = photoURLs[photoURLsIndex];
+        updatedProductPhotos[index].name = photoURLs[photoURLsIndex];
         photoURLsIndex++;
       });
+      setProductPhotos(updatedProductPhotos);
     }
 
     setIsLoading(true);
@@ -131,7 +126,7 @@ export default function NewProduct(props) {
         saveTags(newProduct.productId),
         saveColors(newProduct.productId),
         saveSizes(newProduct.productId),
-        savePhotos(newProduct.productId),
+        savePhotos(newProduct.productId, updatedProductPhotos),
       ]);
       props.history.push("/");
     } catch (e) {
@@ -176,10 +171,10 @@ export default function NewProduct(props) {
     });
   }
 
-  async function savePhotos(productId) {
+  async function savePhotos(productId, newProductPhotos) {
     return API.post("gbk-api", "/values", {
       body: {
-        selectedIds: productPhotos,
+        selectedIds: newProductPhotos.map(photo => photo.name),
         productId,
         itemType: 'photo',
       }
@@ -259,31 +254,13 @@ export default function NewProduct(props) {
             value={productTags}
           />
         </FormGroup>
-        {productPhotos && productPhotos.length > 0 && (
-          <FormGroup>
-            <ControlLabel>Photos</ControlLabel>
-            <FormControl.Static>
-              {productPhotos.map((productPhoto, index) => {
-                const fileName = formatFilename(typeof productPhoto === 'string' ? productPhoto : productPhoto.name);
-                return (
-                  <a
-                    key={fileName}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={photoURLs[index]}
-                    style={{ display: 'block' }}
-                  >
-                    {fileName}
-                  </a>
-                );
-              })}
-            </FormControl.Static>
-          </FormGroup>
-        )}
         <FormGroup controlId="file">
-          {(!productPhotos || productPhotos.length === 0) && <ControlLabel>Photos</ControlLabel>}
+          <ControlLabel>Photos</ControlLabel>
           <FormControl onChange={handleFileChange} type="file" multiple />
         </FormGroup>
+        {productPhotos && productPhotos.length > 0 && (
+          <PhotoViewer updateItems={setProductPhotos} list={productPhotos} />
+        )}
         <LoaderButton
           block
           type="submit"

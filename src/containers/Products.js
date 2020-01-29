@@ -8,6 +8,7 @@ import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import config from "../config";
 import "./Products.css";
+import PhotoViewer from '../components/PhotoViewer';
 
 export default function Products(props) {
   const [product, setProduct] = useState(null);
@@ -23,7 +24,6 @@ export default function Products(props) {
   const [productTags, setProductTags] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
   const [productPhotos, setProductPhotos] = useState([]);
-  const [photoURLs, setPhotoURLs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -92,12 +92,14 @@ export default function Products(props) {
           const photoURLPromises = [];
           photosForProduct.forEach((photoForProduct) => {
             const fileName = photos.find(photo => photo.photoId === photoForProduct.photoId).photoName;
-            productPhotos.push(fileName);
+            productPhotos.push({ name: fileName });
             photoURLPromises.push(Storage.vault.get(fileName));
           });
-          setProductPhotos(productPhotos);
           const photoURLs = await Promise.all(photoURLPromises);
-          setPhotoURLs(photoURLs);
+          photosForProduct.forEach((photoForProduct, index) => {
+            productPhotos[index].url = photoURLs[index];
+          });
+          setProductPhotos(productPhotos);
         }
 
         setProductName(productName || "");
@@ -158,10 +160,6 @@ export default function Products(props) {
     );
   }
 
-  function formatFilename(str) {
-    return str.replace(/^\w+-/, "");
-  }
-
   function handleFileChange(event) {
     setProductPhotos(productPhotos.concat(Array.from(event.target.files)));
   }
@@ -202,10 +200,10 @@ export default function Products(props) {
     });
   }
 
-  async function savePhotos() {
+  async function savePhotos(newProductPhotos) {
     return API.post("gbk-api", "/values", {
       body: {
-        selectedIds: productPhotos,
+        selectedIds: newProductPhotos.map(photo => photo.name),
         productId: props.match.params.id,
         itemType: 'photo',
       }
@@ -215,16 +213,20 @@ export default function Products(props) {
   async function handleSubmit(event) {
     event.preventDefault();
 
+    let updatedProductPhotos = productPhotos.map(productPhoto => ({
+      name: productPhoto.name, url: productPhoto.url,
+    }));
     if (productPhotos.length > 0) {
       const photoUploadPromises = [];
       productPhotos.forEach((productPhoto) => {
-        if (typeof productPhoto !== 'string' && productPhoto.size > config.MAX_ATTACHMENT_SIZE) {
+        if (productPhoto.size && productPhoto.size > config.MAX_ATTACHMENT_SIZE) {
           alert(
             `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE /
               1000000} MB.`
           );
           return;
-        } else if (typeof productPhoto !== 'string') {
+        }
+        if (productPhoto.size) {
           photoUploadPromises.push(s3Upload(productPhoto));
         }
       });
@@ -232,11 +234,12 @@ export default function Products(props) {
       const photoURLs = await Promise.all(photoUploadPromises);
       let photoURLsIndex = 0;
       productPhotos.forEach((productPhoto, index) => {
-        if (typeof productPhoto !== 'string') {
-          productPhotos[index] = photoURLs[photoURLsIndex];
+        if (productPhoto.size) {
+          updatedProductPhotos[index].name = photoURLs[photoURLsIndex];
           photoURLsIndex++;
         }
       });
+      setProductPhotos(updatedProductPhotos);
     }
     
     setIsLoading(true);
@@ -250,7 +253,7 @@ export default function Products(props) {
           productSalePrice: productSalePrice !== "" ? productSalePrice : undefined,
           productOnSale
         }),
-        savePhotos(),
+        savePhotos(updatedProductPhotos),
         saveTags(),
         saveColors(),
         saveSizes(),
@@ -362,31 +365,13 @@ export default function Products(props) {
               value={productTags}
             />
           </FormGroup>
-          {productPhotos && productPhotos.length > 0 && (
-            <FormGroup>
-              <ControlLabel>Photos</ControlLabel>
-              <FormControl.Static>
-                {productPhotos.map((productPhoto, index) => {
-                  const fileName = formatFilename(typeof productPhoto === 'string' ? productPhoto : productPhoto.name);
-                  return (
-                    <a
-                      key={fileName}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href={photoURLs[index]}
-                      style={{ display: 'block' }}
-                    >
-                      {fileName}
-                    </a>
-                  );
-                })}
-              </FormControl.Static>
-            </FormGroup>
-          )}
           <FormGroup controlId="file">
-            {(!productPhotos || productPhotos.length === 0) && <ControlLabel>Photos</ControlLabel>}
+            <ControlLabel>Photos</ControlLabel>
             <FormControl onChange={handleFileChange} type="file" multiple />
           </FormGroup>
+          {productPhotos && productPhotos.length > 0 && (
+            <PhotoViewer updateItems={setProductPhotos} list={productPhotos} />
+          )}
           <LoaderButton
             block
             type="submit"
