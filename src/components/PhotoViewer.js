@@ -45,15 +45,7 @@ export default function PhotoViewer({ list, updateItems }) {
               return {
                 id: fileName,
                 content: (
-                  <a
-                    key={fileName}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={productPhoto.url}// || URL.createObjectURL(productPhoto)}
-                    style={{ display: 'block' }}
-                  >
-                    {fileName}
-                  </a>
+                  <img key={fileName} src={productPhoto.url || URL.createObjectURL(productPhoto)} alt={fileName} width={100} />
                 )
               };
             })} />
