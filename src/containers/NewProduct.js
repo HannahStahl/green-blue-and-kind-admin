@@ -17,6 +17,7 @@ export default function NewProduct(props) {
   const [productSalePrice, setProductSalePrice] = useState("");
   const [productOnSale, setProductOnSale] = useState(false);
   const [productSizes, setProductSizes] = useState([]);
+  const [sizeOptions, setSizeOptions] = useState([]);
   const [productColors, setProductColors] = useState([]);
   const [colorOptions, setColorOptions] = useState([]);
   const [productTags, setProductTags] = useState([]);
@@ -32,28 +33,37 @@ export default function NewProduct(props) {
       return API.get("gbk-api", "/colors");
     }
 
-    // TODO load sizes too
+    function loadSizes() {
+      return API.get("gbk-api", "/sizes");
+    }
 
     async function onLoad() {
       try {
-        const [tags, colors] = await Promise.all([loadTags(), loadColors()]);
+        const [tags, colors, sizes] = await Promise.all([loadTags(), loadColors(), loadSizes()]);
         const tagOptions = tags.map(tag => ({
           value: tag.tagId,
           label: tag.tagName,
         }));
         setTagOptions(tagOptions);
+
         const colorOptions = colors.map(color => ({
           value: color.colorId,
           label: color.colorName,
         }));
         setColorOptions(colorOptions);
+
+        const sizeOptions = sizes.map(size => ({
+          value: size.sizeId,
+          label: size.sizeName,
+        }));
+        setSizeOptions(sizeOptions);
       } catch (e) {
         alert(e);
       }
     }
 
     onLoad();
-  });
+  }, []);
 
   function validateForm() {
     return (
@@ -61,8 +71,8 @@ export default function NewProduct(props) {
       && productDescription.length > 0
       && productPrice > 0
       && (!productOnSale || productSalePrice > 0)
-      // && productSizes && productSizes.length > 0 // TODO add this back in
-      && productColors && productColors.length > 0
+      && (productSizes && productSizes.length > 0)
+      && (productColors && productColors.length > 0)
     );
   }
 
@@ -96,7 +106,9 @@ export default function NewProduct(props) {
         productOnSale,
         productPhoto,
       });
-      await Promise.all([saveTags(newProduct.productId), saveColors(newProduct.productId)]);
+      await Promise.all([
+        saveTags(newProduct.productId), saveColors(newProduct.productId), saveSizes(newProduct.productId),
+      ]);
       props.history.push("/");
     } catch (e) {
       alert(e);
@@ -126,6 +138,16 @@ export default function NewProduct(props) {
         selectedIds: productColors ? productColors.map(color => color.value) : [],
         productId,
         itemType: 'color',
+      }
+    });
+  }
+
+  async function saveSizes(productId) {
+    return API.post("gbk-api", "/values", {
+      body: {
+        selectedIds: productSizes ? productSizes.map(size => size.value) : [],
+        productId,
+        itemType: 'size',
       }
     });
   }
@@ -178,7 +200,7 @@ export default function NewProduct(props) {
           <CreatableSelect
             isMulti
             onChange={setProductSizes}
-            options={[]} // TODO
+            options={sizeOptions}
             placeholder=""
             value={productSizes}
           />
