@@ -239,7 +239,6 @@ export default function Products(props) {
           photoURLsIndex++;
         }
       });
-      setProductPhotos(updatedProductPhotos);
     }
     
     setIsLoading(true);

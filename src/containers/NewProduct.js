@@ -109,7 +109,6 @@ export default function NewProduct(props) {
         updatedProductPhotos[index].name = photoURLs[photoURLsIndex];
         photoURLsIndex++;
       });
-      setProductPhotos(updatedProductPhotos);
     }
 
     setIsLoading(true);
