@@ -104,10 +104,12 @@ export default function NewProduct(props) {
         productPrice: productPrice !== "" ? productPrice : undefined,
         productSalePrice: productSalePrice !== "" ? productSalePrice : undefined,
         productOnSale,
-        productPhoto,
       });
       await Promise.all([
-        saveTags(newProduct.productId), saveColors(newProduct.productId), saveSizes(newProduct.productId),
+        saveTags(newProduct.productId),
+        saveColors(newProduct.productId),
+        saveSizes(newProduct.productId),
+        savePhotos(newProduct.productId, productPhoto),
       ]);
       props.history.push("/");
     } catch (e) {
@@ -148,6 +150,16 @@ export default function NewProduct(props) {
         selectedIds: productSizes ? productSizes.map(size => size.value) : [],
         productId,
         itemType: 'size',
+      }
+    });
+  }
+
+  async function savePhotos(productId, photo) {
+    return API.post("gbk-api", "/values", {
+      body: {
+        selectedIds: [photo],
+        productId,
+        itemType: 'photo',
       }
     });
   }

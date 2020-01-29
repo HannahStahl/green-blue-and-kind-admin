@@ -51,16 +51,32 @@ export default function Products(props) {
       return API.get("gbk-api", "/sizes");
     }
 
-    function loadSizesForProducts() {
+    function loadSizesForProduct() {
       return API.get("gbk-api", `/productsToSizes/${props.match.params.id}`);
+    }
+
+    function loadPhotos() {
+      return API.get("gbk-api", "/photos");
+    }
+
+    function loadPhotosForProduct() {
+      return API.get("gbk-api", `/productsToPhotos/${props.match.params.id}`);
     }
 
     async function onLoad() {
       try {
         const [
-          product, tags, tagsForProduct, colors, colorsForProduct, sizes, sizesForProduct,
+          product, tags, tagsForProduct, colors, colorsForProduct, sizes, sizesForProduct, photos, photosForProduct,
         ] = await Promise.all([
-          loadProduct(), loadTags(), loadTagsForProduct(), loadColors(), loadColorsForProduct(), loadSizes(), loadSizesForProducts(),
+          loadProduct(),
+          loadTags(),
+          loadTagsForProduct(),
+          loadColors(),
+          loadColorsForProduct(),
+          loadSizes(),
+          loadSizesForProduct(),
+          loadPhotos(),
+          loadPhotosForProduct(),
         ]);
         const {
           productName,
@@ -68,11 +84,11 @@ export default function Products(props) {
           productPrice,
           productSalePrice,
           productOnSale,
-          productPhoto,
         } = product;
 
-        if (productPhoto) {
-          product.productPhotoURL = await Storage.vault.get(productPhoto);
+        if (photosForProduct && photosForProduct.length > 0) {
+          product.productPhoto = photos.find(photo => photo.photoId === photosForProduct[0].photoId).photoName;
+          product.productPhotoURL = await Storage.vault.get(product.productPhoto);
         }
 
         setProductName(productName || "");
@@ -177,6 +193,16 @@ export default function Products(props) {
     });
   }
 
+  async function savePhotos(photo) {
+    return API.post("gbk-api", "/values", {
+      body: {
+        selectedIds: [photo],
+        productId: props.match.params.id,
+        itemType: 'photo',
+      }
+    });
+  }
+
   async function handleSubmit(event) {
     let productPhoto;
 
@@ -203,9 +229,9 @@ export default function Products(props) {
           productDescription: productDescription !== "" ? productDescription : undefined,
           productPrice: productPrice !== "" ? productPrice : undefined,
           productSalePrice: productSalePrice !== "" ? productSalePrice : undefined,
-          productOnSale,
-          productPhoto: productPhoto || product.productPhoto
+          productOnSale
         }),
+        savePhotos(productPhoto || product.productPhoto),
         saveTags(),
         saveColors(),
         saveSizes(),
