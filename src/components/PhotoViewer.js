@@ -18,7 +18,11 @@ function Item({ item, index }) {
 }
 
 const ItemList = React.memo(function ItemList({ items }) {
-  return items.map((item, index) => <Item item={item} index={index} key={item.id} />);
+  return (
+    <div style={{ display: 'flex' }}>
+      {items.map((item, index) => <Item item={item} index={index} key={item.id} />)}
+    </div>
+  );
 });
 
 export default function PhotoViewer({ list, updateItems }) {
@@ -37,10 +41,10 @@ export default function PhotoViewer({ list, updateItems }) {
   }
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="list">
+      <Droppable droppableId="list" direction="horizontal">
         {provided => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            <ItemList items={list.map((productPhoto, index) => {
+            <ItemList items={list.map((productPhoto) => {
               const fileName = formatFilename(productPhoto.name);
               return {
                 id: fileName,
