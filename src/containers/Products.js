@@ -157,6 +157,7 @@ export default function Products(props) {
       && (!productOnSale || productSalePrice > 0)
       && (productSizes && productSizes.length > 0)
       && (productColors && productColors.length > 0)
+      && (productPhotos && productPhotos.length > 0)
     );
   }
 
