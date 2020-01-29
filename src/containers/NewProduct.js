@@ -22,6 +22,8 @@ export default function NewProduct(props) {
   const [colorOptions, setColorOptions] = useState([]);
   const [productTags, setProductTags] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
+  const [productPhotos, setProductPhotos] = useState([]);
+  const [photoURLs, setPhotoURLs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -37,9 +39,15 @@ export default function NewProduct(props) {
       return API.get("gbk-api", "/sizes");
     }
 
+    function loadPhotos() {
+      return API.get("gbk-api", "/photos");
+    }
+
     async function onLoad() {
       try {
-        const [tags, colors, sizes] = await Promise.all([loadTags(), loadColors(), loadSizes()]);
+        const [tags, colors, sizes, photos] = await Promise.all([
+          loadTags(), loadColors(), loadSizes(), loadPhotos(),
+        ]);
         const tagOptions = tags.map(tag => ({
           value: tag.tagId,
           label: tag.tagName,
@@ -76,28 +84,42 @@ export default function NewProduct(props) {
     );
   }
 
+  function formatFilename(str) {
+    return str.replace(/^\w+-/, "");
+  }
+
   function handleFileChange(event) {
-    file.current = event.target.files[0];
+    setProductPhotos(productPhotos.concat(Array.from(event.target.files)));
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (file.current && file.current.size > config.MAX_ATTACHMENT_SIZE) {
-      alert(
-        `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE /
-          1000000} MB.`
-      );
-      return;
+    if (productPhotos.length > 0) {
+      const photoUploadPromises = [];
+      productPhotos.forEach((productPhoto) => {
+        if (productPhoto.size > config.MAX_ATTACHMENT_SIZE) {
+          alert(
+            `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE /
+              1000000} MB.`
+          );
+          return;
+        } else {
+          photoUploadPromises.push(s3Upload(productPhoto));
+        }
+      });
+      setIsLoading(true);
+      const photoURLs = await Promise.all(photoUploadPromises);
+      let photoURLsIndex = 0;
+      productPhotos.forEach((productPhoto, index) => {
+        productPhotos[index] = photoURLs[photoURLsIndex];
+        photoURLsIndex++;
+      });
     }
 
     setIsLoading(true);
 
     try {
-      const productPhoto = file.current
-        ? await s3Upload(file.current)
-        : null;
-
       const newProduct = await createProduct({
         productName,
         productDescription: productDescription !== "" ? productDescription : undefined,
@@ -109,7 +131,7 @@ export default function NewProduct(props) {
         saveTags(newProduct.productId),
         saveColors(newProduct.productId),
         saveSizes(newProduct.productId),
-        savePhotos(newProduct.productId, productPhoto),
+        savePhotos(newProduct.productId),
       ]);
       props.history.push("/");
     } catch (e) {
@@ -154,10 +176,10 @@ export default function NewProduct(props) {
     });
   }
 
-  async function savePhotos(productId, photo) {
+  async function savePhotos(productId) {
     return API.post("gbk-api", "/values", {
       body: {
-        selectedIds: [photo],
+        selectedIds: productPhotos,
         productId,
         itemType: 'photo',
       }
@@ -237,9 +259,30 @@ export default function NewProduct(props) {
             value={productTags}
           />
         </FormGroup>
+        {productPhotos && productPhotos.length > 0 && (
+          <FormGroup>
+            <ControlLabel>Photos</ControlLabel>
+            <FormControl.Static>
+              {productPhotos.map((productPhoto, index) => {
+                const fileName = formatFilename(typeof productPhoto === 'string' ? productPhoto : productPhoto.name);
+                return (
+                  <a
+                    key={fileName}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={photoURLs[index]}
+                    style={{ display: 'block' }}
+                  >
+                    {fileName}
+                  </a>
+                );
+              })}
+            </FormControl.Static>
+          </FormGroup>
+        )}
         <FormGroup controlId="file">
-          <ControlLabel>Photo</ControlLabel>
-          <FormControl onChange={handleFileChange} type="file" />
+          {(!productPhotos || productPhotos.length === 0) && <ControlLabel>Photos</ControlLabel>}
+          <FormControl onChange={handleFileChange} type="file" multiple />
         </FormGroup>
         <LoaderButton
           block

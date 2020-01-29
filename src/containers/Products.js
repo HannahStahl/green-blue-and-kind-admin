@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { API, Storage } from "aws-amplify";
 import {
   FormGroup, FormControl, ControlLabel, Checkbox,
@@ -10,7 +10,6 @@ import config from "../config";
 import "./Products.css";
 
 export default function Products(props) {
-  const file = useRef(null);
   const [product, setProduct] = useState(null);
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
@@ -23,6 +22,8 @@ export default function Products(props) {
   const [colorOptions, setColorOptions] = useState([]);
   const [productTags, setProductTags] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
+  const [productPhotos, setProductPhotos] = useState([]);
+  const [photoURLs, setPhotoURLs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -86,9 +87,17 @@ export default function Products(props) {
           productOnSale,
         } = product;
 
-        if (photosForProduct && photosForProduct.length > 0) {
-          product.productPhoto = photos.find(photo => photo.photoId === photosForProduct[0].photoId).photoName;
-          product.productPhotoURL = await Storage.vault.get(product.productPhoto);
+        if (photosForProduct) {
+          const productPhotos = [];
+          const photoURLPromises = [];
+          photosForProduct.forEach((photoForProduct) => {
+            const fileName = photos.find(photo => photo.photoId === photoForProduct.photoId).photoName;
+            productPhotos.push(fileName);
+            photoURLPromises.push(Storage.vault.get(fileName));
+          });
+          setProductPhotos(productPhotos);
+          const photoURLs = await Promise.all(photoURLPromises);
+          setPhotoURLs(photoURLs);
         }
 
         setProductName(productName || "");
@@ -154,7 +163,7 @@ export default function Products(props) {
   }
 
   function handleFileChange(event) {
-    file.current = event.target.files[0];
+    setProductPhotos(productPhotos.concat(Array.from(event.target.files)));
   }
 
   function saveProduct(product) {
@@ -193,10 +202,10 @@ export default function Products(props) {
     });
   }
 
-  async function savePhotos(photo) {
+  async function savePhotos() {
     return API.post("gbk-api", "/values", {
       body: {
-        selectedIds: [photo],
+        selectedIds: productPhotos,
         productId: props.match.params.id,
         itemType: 'photo',
       }
@@ -204,25 +213,35 @@ export default function Products(props) {
   }
 
   async function handleSubmit(event) {
-    let productPhoto;
-
     event.preventDefault();
 
-    if (file.current && file.current.size > config.MAX_ATTACHMENT_SIZE) {
-      alert(
-        `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE /
-          1000000} MB.`
-      );
-      return;
+    if (productPhotos.length > 0) {
+      const photoUploadPromises = [];
+      productPhotos.forEach((productPhoto) => {
+        if (typeof productPhoto !== 'string' && productPhoto.size > config.MAX_ATTACHMENT_SIZE) {
+          alert(
+            `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE /
+              1000000} MB.`
+          );
+          return;
+        } else if (typeof productPhoto !== 'string') {
+          photoUploadPromises.push(s3Upload(productPhoto));
+        }
+      });
+      setIsLoading(true);
+      const photoURLs = await Promise.all(photoUploadPromises);
+      let photoURLsIndex = 0;
+      productPhotos.forEach((productPhoto, index) => {
+        if (typeof productPhoto !== 'string') {
+          productPhotos[index] = photoURLs[photoURLsIndex];
+          photoURLsIndex++;
+        }
+      });
     }
-
+    
     setIsLoading(true);
 
     try {
-      if (file.current) {
-        productPhoto = await s3Upload(file.current);
-      }
-
       await Promise.all([
         saveProduct({
           productName,
@@ -231,7 +250,7 @@ export default function Products(props) {
           productSalePrice: productSalePrice !== "" ? productSalePrice : undefined,
           productOnSale
         }),
-        savePhotos(productPhoto || product.productPhoto),
+        savePhotos(),
         saveTags(),
         saveColors(),
         saveSizes(),
@@ -343,23 +362,30 @@ export default function Products(props) {
               value={productTags}
             />
           </FormGroup>
-          {product.productPhoto && (
+          {productPhotos && productPhotos.length > 0 && (
             <FormGroup>
-              <ControlLabel>Photo</ControlLabel>
+              <ControlLabel>Photos</ControlLabel>
               <FormControl.Static>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={product.productPhotoURL}
-                >
-                  {formatFilename(product.productPhoto)}
-                </a>
+                {productPhotos.map((productPhoto, index) => {
+                  const fileName = formatFilename(typeof productPhoto === 'string' ? productPhoto : productPhoto.name);
+                  return (
+                    <a
+                      key={fileName}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={photoURLs[index]}
+                      style={{ display: 'block' }}
+                    >
+                      {fileName}
+                    </a>
+                  );
+                })}
               </FormControl.Static>
             </FormGroup>
           )}
           <FormGroup controlId="file">
-            {!product.productPhoto && <ControlLabel>Photo</ControlLabel>}
-            <FormControl onChange={handleFileChange} type="file" />
+            {(!productPhotos || productPhotos.length === 0) && <ControlLabel>Photos</ControlLabel>}
+            <FormControl onChange={handleFileChange} type="file" multiple />
           </FormGroup>
           <LoaderButton
             block

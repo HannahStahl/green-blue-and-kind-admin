@@ -6,3 +6,7 @@
   height: 300px;
   font-size: 24px;
 }
+
+.NewProduct input[type=file]{ 
+  color: transparent;
+}
