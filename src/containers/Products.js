@@ -110,8 +110,8 @@ export default function Products(props) {
       && productDescription.length > 0
       && productPrice > 0
       && (!productOnSale || productSalePrice > 0)
-      // && productSizes.length > 0 // TODO add this back in
-      && productColors.length > 0
+      // && productSizes && productSizes.length > 0 // TODO add this back in
+      && productColors && productColors.length > 0
     );
   }
 
@@ -130,19 +130,21 @@ export default function Products(props) {
   }
 
   async function saveTags() {
-    return API.post("gbk-api", "/tags", {
+    return API.post("gbk-api", "/values", {
       body: {
         selectedIds: productTags ? productTags.map(tag => tag.value) : [],
         productId: props.match.params.id,
+        itemType: 'tag',
       }
     });
   }
 
   async function saveColors() {
-    return API.post("gbk-api", "/colors", {
+    return API.post("gbk-api", "/values", {
       body: {
         selectedIds: productColors ? productColors.map(color => color.value) : [],
         productId: props.match.params.id,
+        itemType: 'color',
       }
     });
   }
