@@ -142,7 +142,7 @@ export default function NewProduct(props) {
   }
 
   async function saveTags(productId) {
-    return API.post("gbk-api", "/values", {
+    return API.post("gbk-api", "/items", {
       body: {
         selectedIds: productTags ? productTags.map(tag => tag.value) : [],
         productId,
@@ -152,7 +152,7 @@ export default function NewProduct(props) {
   }
 
   async function saveColors(productId) {
-    return API.post("gbk-api", "/values", {
+    return API.post("gbk-api", "/items", {
       body: {
         selectedIds: productColors ? productColors.map(color => color.value) : [],
         productId,
@@ -162,7 +162,7 @@ export default function NewProduct(props) {
   }
 
   async function saveSizes(productId) {
-    return API.post("gbk-api", "/values", {
+    return API.post("gbk-api", "/items", {
       body: {
         selectedIds: productSizes ? productSizes.map(size => size.value) : [],
         productId,
@@ -172,7 +172,7 @@ export default function NewProduct(props) {
   }
 
   async function savePhotos(productId, newProductPhotos) {
-    return API.post("gbk-api", "/values", {
+    return API.post("gbk-api", "/items", {
       body: {
         selectedIds: newProductPhotos.map(photo => photo.name),
         productId,
