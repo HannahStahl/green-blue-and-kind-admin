@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { API } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
-import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
+import { ListGroup, ListGroupItem } from "react-bootstrap";
 import "./Home.css";
 
 export default function Home(props) {
-  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -13,37 +13,34 @@ export default function Home(props) {
       if (!props.isAuthenticated) {
         return;
       }
-
       try {
-        const products = await loadProducts();
-        setProducts(products);
+        const categories = await loadCategories();
+        setCategories(categories);
       } catch (e) {
         alert(e);
       }
-
       setIsLoading(false);
     }
-
     onLoad();
   }, [props.isAuthenticated]);
 
-  function loadProducts() {
-    return API.get("gbk-api", "/products");
+  function loadCategories() {
+    return API.get("gbk-api", "/categories");
   }
 
-  function renderProductsList(products) {
-    return [{}].concat(products).map((product, i) =>
+  function renderCategoriesList(categories) {
+    return [{}].concat(categories).map((category, i) =>
       i !== 0 ? (
-        <LinkContainer key={product.productId} to={`/products/${product.productId}`}>
-          <ListGroupItem header={product.productName.trim().split("\n")[0]}>
-            {"Created: " + new Date(product.createdAt).toLocaleString()}
+        <LinkContainer key={category.categoryId} to={`/categories/${category.categoryId}`}>
+          <ListGroupItem header={category.categoryName.trim().split("\n")[0]}>
+            {"Created: " + new Date(category.createdAt).toLocaleString()}
           </ListGroupItem>
         </LinkContainer>
       ) : (
-        <LinkContainer key="new" to="/products/new">
+        <LinkContainer key="new" to="/categories/new">
           <ListGroupItem>
             <h4>
-              <b>{"\uFF0B"}</b> Create a new product
+              <b>{"\uFF0B"}</b> Create a new category
             </h4>
           </ListGroupItem>
         </LinkContainer>
@@ -59,12 +56,11 @@ export default function Home(props) {
     );
   }
 
-  function renderProducts() {
+  function renderCategories() {
     return (
-      <div className="products">
-        <PageHeader>Your Products</PageHeader>
+      <div className="categories">
         <ListGroup>
-          {!isLoading && renderProductsList(products)}
+          {!isLoading && renderCategoriesList(categories)}
         </ListGroup>
       </div>
     );
@@ -72,7 +68,7 @@ export default function Home(props) {
 
   return (
     <div className="Home">
-      {props.isAuthenticated ? renderProducts() : renderLander()}
+      {props.isAuthenticated ? renderCategories() : renderLander()}
     </div>
   );
 }

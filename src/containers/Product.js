@@ -29,7 +29,7 @@ export default function Product(props) {
 
   useEffect(() => {
     function loadProduct() {
-      return API.get("gbk-api", `/products/${props.match.params.id}`);
+      return API.get("gbk-api", `/product/${props.match.params.id}`);
     }
 
     function loadTags() {
