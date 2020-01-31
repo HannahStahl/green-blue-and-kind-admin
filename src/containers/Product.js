@@ -6,7 +6,6 @@ import {
 import CreatableSelect from 'react-select/creatable';
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
-import config from "../config";
 import "./Product.css";
 import PhotoViewer from '../components/PhotoViewer';
 
@@ -181,7 +180,22 @@ export default function Product(props) {
   }
 
   function handleFileChange(event) {
-    setProductPhotos(productPhotos.concat(Array.from(event.target.files)));
+    let i = 0;
+    let nonImageFound = false;
+    const files = Array.from(event.target.files);
+    while (i < files.length && !nonImageFound) {
+      const file = files[i];
+      const fileExtension = file.name.toLowerCase().split('.')[1];
+      if (!["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
+        nonImageFound = true;
+      }
+      i++;
+    }
+    if (nonImageFound) {
+      alert(`Please upload image files only.`);
+    } else {
+      setProductPhotos(productPhotos.concat(Array.from(event.target.files)));
+    }
   }
 
   function saveProduct(product) {
@@ -239,13 +253,6 @@ export default function Product(props) {
     if (productPhotos.length > 0) {
       const photoUploadPromises = [];
       productPhotos.forEach((productPhoto) => {
-        if (productPhoto.size && productPhoto.size > config.MAX_ATTACHMENT_SIZE) {
-          alert(
-            `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE /
-              1000000} MB.`
-          );
-          return;
-        }
         if (productPhoto.size) {
           photoUploadPromises.push(s3Upload(productPhoto));
         }

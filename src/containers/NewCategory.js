@@ -3,7 +3,6 @@ import { API } from "aws-amplify";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
-import config from "../config";
 import "./NewCategory.css";
 
 export default function NewCategory(props) {
@@ -16,18 +15,17 @@ export default function NewCategory(props) {
   }
 
   function handleFileChange(event) {
-    setFile(event.target.files[0]);
+    const file = event.target.files[0];
+    const fileExtension = file.name.toLowerCase().split('.')[1];
+    if (!["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
+      alert(`Please upload an image file.`);
+      return;
+    }
+    setFile(file);
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (file && file.size > config.MAX_ATTACHMENT_SIZE) {
-      alert(
-        `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE /
-          1000000} MB.`
-      );
-      return;
-    }
     setIsLoading(true);
     try {
       const categoryPhoto = file ? await s3Upload(file) : null;

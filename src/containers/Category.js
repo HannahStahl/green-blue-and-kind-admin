@@ -6,7 +6,6 @@ import {
 } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
-import config from "../config";
 import "./Category.css";
 
 export default function Category(props) {
@@ -50,7 +49,13 @@ export default function Category(props) {
   }
 
   function handleFileChange(event) {
-    setFile(event.target.files[0]);
+    const file = event.target.files[0];
+    const fileExtension = file.name.toLowerCase().split('.')[1];
+    if (!["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
+      alert(`Please upload an image file.`);
+      return;
+    }
+    setFile(file);
   }
 
   function saveCategory(category) {
@@ -62,13 +67,6 @@ export default function Category(props) {
   async function handleSubmit(event) {
     let categoryPhoto;
     event.preventDefault();
-    if (file && file.size > config.MAX_ATTACHMENT_SIZE) {
-      alert(
-        `Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE /
-          1000000} MB.`
-      );
-      return;
-    }
     setIsLoading(true);
     try {
       if (file) {
