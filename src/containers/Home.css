@@ -55,6 +55,10 @@
   padding: 20px;
 }
 
+.Home .categories .list-group-item:hover .category-name {
+  background-color: rgba(250, 250, 250, 0.9);
+}
+
 .Home .categories h4 {
   font-family: "Open Sans", sans-serif;
   font-weight: 600;
