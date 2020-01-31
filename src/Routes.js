@@ -20,7 +20,7 @@ export default function Routes({ appProps }) {
       <UnauthenticatedRoute path="/signup" exact component={Signup} appProps={appProps} />
       <AuthenticatedRoute path="/categories/new" exact component={NewCategory} appProps={appProps} />
       <AuthenticatedRoute path="/categories/:id" exact component={Category} appProps={appProps} />
-      <AuthenticatedRoute path="/products/new" exact component={NewProduct} appProps={appProps} />
+      <AuthenticatedRoute path="/products/new/:id" exact component={NewProduct} appProps={appProps} />
       <AuthenticatedRoute path="/products/:id" exact component={Product} appProps={appProps} />
       {/* Finally, catch all unmatched routes */}
       <Route component={NotFound} />

@@ -12,6 +12,8 @@ import PhotoViewer from '../components/PhotoViewer';
 
 export default function Product(props) {
   const [product, setProduct] = useState(null);
+  const [categoryId, setCategoryId] = useState("");
+  const [categoryOptions, setCategoryOptions] = useState([]);
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
@@ -28,6 +30,10 @@ export default function Product(props) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    function loadCategories() {
+      return API.get("gbk-api", "/categories");
+    }
+
     function loadProduct() {
       return API.get("gbk-api", `/product/${props.match.params.id}`);
     }
@@ -67,8 +73,18 @@ export default function Product(props) {
     async function onLoad() {
       try {
         const [
-          product, tags, tagsForProduct, colors, colorsForProduct, sizes, sizesForProduct, photos, photosForProduct,
+          categories,
+          product,
+          tags,
+          tagsForProduct,
+          colors,
+          colorsForProduct,
+          sizes,
+          sizesForProduct,
+          photos,
+          photosForProduct,
         ] = await Promise.all([
+          loadCategories(),
           loadProduct(),
           loadTags(),
           loadTagsForProduct(),
@@ -80,6 +96,7 @@ export default function Product(props) {
           loadPhotosForProduct(),
         ]);
         const {
+          categoryId,
           productName,
           productDescription,
           productPrice,
@@ -102,6 +119,8 @@ export default function Product(props) {
           setProductPhotos(productPhotos);
         }
 
+        setCategoryOptions(categories);
+        setCategoryId(categoryId);
         setProductName(productName || "");
         setProductDescription(productDescription || "");
         setProductPrice(productPrice || "");
@@ -251,7 +270,8 @@ export default function Product(props) {
           productDescription: productDescription !== "" ? productDescription : undefined,
           productPrice: productPrice !== "" ? productPrice : undefined,
           productSalePrice: productSalePrice !== "" ? productSalePrice : undefined,
-          productOnSale
+          productOnSale,
+          categoryId,
         }),
         savePhotos(updatedProductPhotos),
         saveTags(),
@@ -295,6 +315,18 @@ export default function Product(props) {
     <div className="Product">
       {product && (
         <form onSubmit={handleSubmit}>
+          <FormGroup controlId="categoryId">
+            <ControlLabel>Category</ControlLabel>
+            <FormControl
+              value={categoryId}
+              componentClass="select"
+              onChange={e => setCategoryId(e.target.value)}
+            >
+              {categoryOptions.map(category => (
+                <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+              ))}
+            </FormControl>
+          </FormGroup>
           <FormGroup controlId="productName">
             <ControlLabel>Name</ControlLabel>
             <FormControl

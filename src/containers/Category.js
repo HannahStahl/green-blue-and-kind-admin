@@ -114,7 +114,7 @@ export default function Category(props) {
           </ListGroupItem>
         </LinkContainer>
       ) : (
-        <LinkContainer key="new" to="/products/new">
+        <LinkContainer key="new" to={`/products/new/${category.categoryId}`}>
           <ListGroupItem>
             <h4>
               <b>{"\uFF0B"}</b> Create a new product
@@ -129,7 +129,7 @@ export default function Category(props) {
     return (
       <div className="products">
         <ListGroup>
-          {!isLoading && renderProductsList(products)}
+          {renderProductsList(products)}
         </ListGroup>
       </div>
     );
@@ -181,7 +181,7 @@ export default function Category(props) {
           </LoaderButton>
         </form>
       )}
-      {renderProducts()}
+      {category && renderProducts()}
     </div>
   );
 }

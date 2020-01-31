@@ -11,6 +11,8 @@ import "./NewProduct.css";
 import PhotoViewer from '../components/PhotoViewer';
 
 export default function NewProduct(props) {
+  const [categoryId, setCategoryId] = useState(props.match.params.id);
+  const [categoryOptions, setCategoryOptions] = useState([]);
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
@@ -26,6 +28,10 @@ export default function NewProduct(props) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    function loadCategories() {
+      return API.get("gbk-api", "/categories");
+    }
+
     function loadTags() {
       return API.get("gbk-api", "/tags");
     }
@@ -40,9 +46,12 @@ export default function NewProduct(props) {
 
     async function onLoad() {
       try {
-        const [tags, colors, sizes] = await Promise.all([
-          loadTags(), loadColors(), loadSizes(),
+        const [categories, tags, colors, sizes] = await Promise.all([
+          loadCategories(), loadTags(), loadColors(), loadSizes(),
         ]);
+
+        setCategoryOptions(categories);
+
         const tagOptions = tags.map(tag => ({
           value: tag.tagId,
           label: tag.tagName,
@@ -121,6 +130,7 @@ export default function NewProduct(props) {
         productPrice: productPrice !== "" ? productPrice : undefined,
         productSalePrice: productSalePrice !== "" ? productSalePrice : undefined,
         productOnSale,
+        categoryId,
       });
       await Promise.all([
         saveTags(newProduct.productId),
@@ -184,6 +194,18 @@ export default function NewProduct(props) {
   return (
     <div className="NewProduct">
       <form onSubmit={handleSubmit}>
+        <FormGroup controlId="categoryId">
+          <ControlLabel>Category</ControlLabel>
+          <FormControl
+            value={categoryId}
+            componentClass="select"
+            onChange={e => setCategoryId(e.target.value)}
+          >
+            {categoryOptions.map(category => (
+              <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+            ))}
+          </FormControl>
+        </FormGroup>
         <FormGroup controlId="productName">
           <ControlLabel>Name</ControlLabel>
           <FormControl
