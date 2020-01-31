@@ -50,7 +50,7 @@ export default function Home(props) {
       ) : (
         <LinkContainer key="new" to="/categories/new">
           <ListGroupItem>
-            <h4><b>{"\uFF0B"}</b></h4>
+            <h4 className="new-category">{"\uFF0B"}</h4>
           </ListGroupItem>
         </LinkContainer>
       )
