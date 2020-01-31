@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { API } from "aws-amplify";
+import { API, Storage } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
 import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
 import "./Home.css";
@@ -15,6 +15,14 @@ export default function Home(props) {
       }
       try {
         const categories = await loadCategories();
+        const promises = [];
+        categories.forEach((category) => {
+          promises.push(Storage.vault.get(category.categoryPhoto));
+        });
+        const photos = await Promise.all(promises);
+        categories.forEach((category, index) => {
+          categories[index].categoryPhotoObject = photos[index];
+        });
         setCategories(categories);
       } catch (e) {
         alert(e);
@@ -32,7 +40,12 @@ export default function Home(props) {
     return [{}].concat(categories).map((category, i) =>
       i !== 0 ? (
         <LinkContainer key={category.categoryId} to={`/categories/${category.categoryId}`}>
-          <ListGroupItem header={category.categoryName.trim().split("\n")[0]} />
+          <ListGroupItem>
+            <img src={category.categoryPhotoObject} alt={category.categoryName} />
+            <div className="category-name">
+              <h4>{category.categoryName.trim().split("\n")[0]}</h4>
+            </div>
+          </ListGroupItem>
         </LinkContainer>
       ) : (
         <LinkContainer key="new" to="/categories/new">
