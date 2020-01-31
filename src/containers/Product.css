@@ -1,0 +1,12 @@
+.Product form {
+  padding-bottom: 15px;
+}
+
+.Product form textarea {
+  height: 300px;
+  font-size: 24px;
+}
+
+.Product input[type=file]{ 
+  color: transparent;
+}

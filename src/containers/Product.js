@@ -7,10 +7,10 @@ import CreatableSelect from 'react-select/creatable';
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import config from "../config";
-import "./Products.css";
+import "./Product.css";
 import PhotoViewer from '../components/PhotoViewer';
 
-export default function Products(props) {
+export default function Product(props) {
   const [product, setProduct] = useState(null);
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
@@ -292,7 +292,7 @@ export default function Products(props) {
   }
 
   return (
-    <div className="Products">
+    <div className="Product">
       {product && (
         <form onSubmit={handleSubmit}>
           <FormGroup controlId="productName">

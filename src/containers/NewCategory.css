@@ -1,12 +1,12 @@
-.Products form {
+.NewCategory form {
   padding-bottom: 15px;
 }
 
-.Products form textarea {
+.NewCategory form textarea {
   height: 300px;
   font-size: 24px;
 }
 
-.Products input[type=file]{ 
+.NewCategory input[type=file]{ 
   color: transparent;
 }

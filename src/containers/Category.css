@@ -1,0 +1,12 @@
+.Category form {
+  padding-bottom: 15px;
+}
+
+.Category form textarea {
+  height: 300px;
+  font-size: 24px;
+}
+
+.Category input[type=file]{ 
+  color: transparent;
+}
