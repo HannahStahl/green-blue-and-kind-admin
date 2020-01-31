@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { API } from "aws-amplify";
 import { LinkContainer } from "react-router-bootstrap";
-import { ListGroup, ListGroupItem } from "react-bootstrap";
+import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
 import "./Home.css";
 
 export default function Home(props) {
@@ -32,16 +32,12 @@ export default function Home(props) {
     return [{}].concat(categories).map((category, i) =>
       i !== 0 ? (
         <LinkContainer key={category.categoryId} to={`/categories/${category.categoryId}`}>
-          <ListGroupItem header={category.categoryName.trim().split("\n")[0]}>
-            {"Created: " + new Date(category.createdAt).toLocaleString()}
-          </ListGroupItem>
+          <ListGroupItem header={category.categoryName.trim().split("\n")[0]} />
         </LinkContainer>
       ) : (
         <LinkContainer key="new" to="/categories/new">
           <ListGroupItem>
-            <h4>
-              <b>{"\uFF0B"}</b> Create a new category
-            </h4>
+            <h4><b>{"\uFF0B"}</b></h4>
           </ListGroupItem>
         </LinkContainer>
       )
@@ -59,6 +55,7 @@ export default function Home(props) {
   function renderCategories() {
     return (
       <div className="categories">
+        <PageHeader>Product Categories</PageHeader>
         <ListGroup>
           {!isLoading && renderCategoriesList(categories)}
         </ListGroup>

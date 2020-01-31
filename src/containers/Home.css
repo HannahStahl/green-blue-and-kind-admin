@@ -12,6 +12,32 @@
   color: #999;
 }
 
+.Home .categories .page-header {
+  text-align: center;
+}
+
+.Home .categories .page-header h1 {
+  font-family: "Open Sans", sans-serif;
+}
+
+.Home .categories .list-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Home .categories .list-group-item {
+  width: 30vw;
+  max-width: 300px;
+  height: 25vw;
+  max-height: 250px;
+  padding: 15px;
+  margin: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .Home .categories h4 {
   font-family: "Open Sans", sans-serif;
   font-weight: 600;
