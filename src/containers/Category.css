@@ -6,7 +6,8 @@
 
 .Category form {
   padding-bottom: 15px;
-  max-width: 400px;
+  width: 400px;
+  min-width: 300px;
   margin-right: 60px;
 }
 
