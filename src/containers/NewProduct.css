@@ -1,10 +1,25 @@
+.NewProduct {
+  margin-bottom: 100px;
+}
+
 .NewProduct form {
   padding-bottom: 15px;
+  display: flex;
+}
+
+.NewProduct form .left-half {
+  padding-right: 60px;
+  min-width: 400px;
+}
+
+.NewProduct form .right-half {
+  padding-left: 60px;
+  border-left: solid 1px #eee;
+  min-width: 500px;
 }
 
 .NewProduct form textarea {
-  height: 300px;
-  font-size: 24px;
+  height: 200px;
 }
 
 .NewProduct input[type=file]{ 

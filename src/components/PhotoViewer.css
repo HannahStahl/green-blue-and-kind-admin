@@ -1,15 +1,22 @@
 .photos-container {
   display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
 }
 
 .photo-container {
   position: relative;
 }
 
+.photo-container img {
+  margin: 10px;
+  border: solid 1px #eee;
+}
+
 .remove-photo {
   position: absolute;
-  top: 2px;
-  right: 10px;
+  top: 12px;
+  right: 20px;
   color: white;
   text-shadow: -1px 1px #3d3d3d;
 }
