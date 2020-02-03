@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { API } from "aws-amplify";
-import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import {
+  FormGroup, FormControl, ControlLabel, PageHeader,
+} from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import "./NewCategory.css";
@@ -46,6 +48,7 @@ export default function NewCategory(props) {
   return (
     <div className="NewCategory">
       <form onSubmit={handleSubmit}>
+        <PageHeader>New Category</PageHeader>
         <FormGroup controlId="categoryName">
           <ControlLabel>Name</ControlLabel>
           <FormControl
@@ -55,7 +58,7 @@ export default function NewCategory(props) {
           />
         </FormGroup>
         <FormGroup controlId="file">
-          <ControlLabel>Photo</ControlLabel>
+          <ControlLabel>Image</ControlLabel>
           <FormControl onChange={handleFileChange} type="file" />
           {file && (
             <FormControl.Static>
