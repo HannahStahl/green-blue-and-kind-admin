@@ -323,98 +323,101 @@ export default function Product(props) {
       <PageHeader>Edit Product</PageHeader>
       {product && (
         <form onSubmit={handleSubmit}>
-          <div className="left-half">
-            <FormGroup controlId="categoryId">
-              <ControlLabel>Category</ControlLabel>
-              <FormControl
-                value={categoryId}
-                componentClass="select"
-                onChange={e => setCategoryId(e.target.value)}
-              >
-                {categoryOptions.map(category => (
-                  <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
-                ))}
-              </FormControl>
-            </FormGroup>
-            <FormGroup controlId="productName">
-              <ControlLabel>Name</ControlLabel>
-              <FormControl
-                value={productName}
-                type="text"
-                onChange={e => setProductName(e.target.value)}
-              />
-            </FormGroup>
-            <FormGroup controlId="productDescription">
-              <ControlLabel>Description</ControlLabel>
-              <FormControl
-                value={productDescription}
-                componentClass="textarea"
-                onChange={e => setProductDescription(e.target.value)}
-              />
-            </FormGroup>
-            <FormGroup controlId="productPrice">
-              <ControlLabel>Price</ControlLabel>
-              <FormControl
-                value={productPrice}
-                type="number"
-                onChange={e => setProductPrice(e.target.value)}
-              />
-            </FormGroup>
-            <FormGroup controlId="productSalePrice">
-              <ControlLabel>Sale Price</ControlLabel>
-              <FormControl
-                value={productSalePrice}
-                type="number"
-                onChange={e => setProductSalePrice(e.target.value)}
-              />
-            </FormGroup>
-            <FormGroup controlId="productOnSale">
-              <Checkbox
-                checked={productOnSale}
-                onChange={e => setProductOnSale(e.target.checked)}
-              >
-                On Sale
-              </Checkbox>
-            </FormGroup>
+          <div className="form-fields">
+            <div className="left-half">
+              <FormGroup controlId="categoryId">
+                <ControlLabel>Category</ControlLabel>
+                <FormControl
+                  value={categoryId}
+                  componentClass="select"
+                  onChange={e => setCategoryId(e.target.value)}
+                >
+                  {categoryOptions.map(category => (
+                    <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+                  ))}
+                </FormControl>
+              </FormGroup>
+              <FormGroup controlId="productName">
+                <ControlLabel>Name</ControlLabel>
+                <FormControl
+                  value={productName}
+                  type="text"
+                  onChange={e => setProductName(e.target.value)}
+                />
+              </FormGroup>
+              <FormGroup controlId="productDescription">
+                <ControlLabel>Description</ControlLabel>
+                <FormControl
+                  value={productDescription}
+                  componentClass="textarea"
+                  onChange={e => setProductDescription(e.target.value)}
+                />
+              </FormGroup>
+              <FormGroup controlId="productPrice">
+                <ControlLabel>Price</ControlLabel>
+                <FormControl
+                  value={productPrice}
+                  type="number"
+                  onChange={e => setProductPrice(e.target.value)}
+                />
+              </FormGroup>
+              <FormGroup controlId="productSalePrice">
+                <ControlLabel>Sale Price</ControlLabel>
+                <FormControl
+                  value={productSalePrice}
+                  type="number"
+                  onChange={e => setProductSalePrice(e.target.value)}
+                />
+              </FormGroup>
+              <FormGroup controlId="productOnSale">
+                <Checkbox
+                  checked={productOnSale}
+                  onChange={e => setProductOnSale(e.target.checked)}
+                >
+                  On Sale
+                </Checkbox>
+              </FormGroup>
+            </div>
+            <div className="right-half">
+              <FormGroup controlId="file">
+                <ControlLabel>Images</ControlLabel>
+                <FormControl onChange={handleFileChange} type="file" multiple />
+              </FormGroup>
+              {productPhotos && productPhotos.length > 0 && (
+                <PhotoViewer updateItems={setProductPhotos} list={productPhotos} />
+              )}
+              <FormGroup controlId="productSizes">
+                <ControlLabel>Sizes</ControlLabel>
+                <CreatableSelect
+                  isMulti
+                  onChange={setProductSizes}
+                  options={sizeOptions}
+                  placeholder=""
+                  value={productSizes}
+                />
+              </FormGroup>
+              <FormGroup controlId="productColors">
+                <ControlLabel>Colors</ControlLabel>
+                <CreatableSelect
+                  isMulti
+                  onChange={setProductColors}
+                  options={colorOptions}
+                  placeholder=""
+                  value={productColors}
+                />
+              </FormGroup>
+              <FormGroup controlId="productTags">
+                <ControlLabel>Tags</ControlLabel>
+                <CreatableSelect
+                  isMulti
+                  onChange={setProductTags}
+                  options={tagOptions}
+                  placeholder=""
+                  value={productTags}
+                />
+              </FormGroup>
+            </div>
           </div>
-          <div className="right-half">
-            <FormGroup controlId="file">
-              <ControlLabel>Images</ControlLabel>
-              <FormControl onChange={handleFileChange} type="file" multiple />
-            </FormGroup>
-            {productPhotos && productPhotos.length > 0 && (
-              <PhotoViewer updateItems={setProductPhotos} list={productPhotos} />
-            )}
-            <FormGroup controlId="productSizes">
-              <ControlLabel>Sizes</ControlLabel>
-              <CreatableSelect
-                isMulti
-                onChange={setProductSizes}
-                options={sizeOptions}
-                placeholder=""
-                value={productSizes}
-              />
-            </FormGroup>
-            <FormGroup controlId="productColors">
-              <ControlLabel>Colors</ControlLabel>
-              <CreatableSelect
-                isMulti
-                onChange={setProductColors}
-                options={colorOptions}
-                placeholder=""
-                value={productColors}
-              />
-            </FormGroup>
-            <FormGroup controlId="productTags">
-              <ControlLabel>Tags</ControlLabel>
-              <CreatableSelect
-                isMulti
-                onChange={setProductTags}
-                options={tagOptions}
-                placeholder=""
-                value={productTags}
-              />
-            </FormGroup>
             <LoaderButton
               block
               type="submit"
@@ -434,7 +437,6 @@ export default function Product(props) {
             >
               Delete
             </LoaderButton>
-          </div>
         </form>
       )}
     </div>

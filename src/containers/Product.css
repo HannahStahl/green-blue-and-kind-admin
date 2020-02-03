@@ -2,17 +2,17 @@
   margin-bottom: 100px;
 }
 
-.Product form {
+.Product .form-fields {
   padding-bottom: 15px;
   display: flex;
 }
 
-.Product form .left-half {
+.Product .form-fields .left-half {
   padding-right: 60px;
   min-width: 400px;
 }
 
-.Product form .right-half {
+.Product .form-fields .right-half {
   padding-left: 60px;
   border-left: solid 1px #eee;
   min-width: 500px;
