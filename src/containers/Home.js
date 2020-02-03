@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { API, Storage } from "aws-amplify";
-import { LinkContainer } from "react-router-bootstrap";
-import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
+import { PageHeader } from "react-bootstrap";
 import "./Home.css";
+import ItemsList from "../components/ItemsList";
 
 export default function Home(props) {
   const [categories, setCategories] = useState([]);
@@ -37,23 +37,18 @@ export default function Home(props) {
   }
 
   function renderCategoriesList(categories) {
-    return [{}].concat(categories).map((category, i) =>
-      i !== 0 ? (
-        <LinkContainer key={category.categoryId} to={`/categories/${category.categoryId}`}>
-          <ListGroupItem>
-            <img src={category.categoryPhotoObject} alt={category.categoryName} />
-            <div className="category-name">
-              <h4>{category.categoryName.trim().split("\n")[0]}</h4>
-            </div>
-          </ListGroupItem>
-        </LinkContainer>
-      ) : (
-        <LinkContainer key="new" to="/categories/new">
-          <ListGroupItem>
-            <h4 className="new-category">{"\uFF0B"}</h4>
-          </ListGroupItem>
-        </LinkContainer>
-      )
+    return (
+      <ItemsList
+        items={categories.map(category => ({
+          id: category.categoryId,
+          name: category.categoryName,
+          photo: category.categoryPhotoObject,
+          url: `/categories/${category.categoryId}`,
+        }))}
+        newItemUrl="/categories/new"
+        size="large"
+        alignment="center"
+      />
     );
   }
 
@@ -69,9 +64,7 @@ export default function Home(props) {
     return (
       <div className="categories">
         <PageHeader>Product Categories</PageHeader>
-        <ListGroup>
-          {!isLoading && renderCategoriesList(categories)}
-        </ListGroup>
+        {!isLoading && renderCategoriesList(categories)}
       </div>
     );
   }

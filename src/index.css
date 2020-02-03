@@ -19,3 +19,7 @@ input.form-control {
 input[type=file] {
   width: 100%;
 }
+
+.page-header h1 {
+  font-family: "Open Sans", sans-serif;
+}

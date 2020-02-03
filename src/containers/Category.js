@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { API, Storage } from "aws-amplify";
-import { LinkContainer } from "react-router-bootstrap";
 import {
-  ListGroup, ListGroupItem, FormGroup, FormControl, ControlLabel,
+  ListGroup, FormGroup, FormControl, ControlLabel, PageHeader,
 } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import "./Category.css";
+import ItemsList from "../components/ItemsList";
 
 export default function Category(props) {
   const [file, setFile] = useState(null);
@@ -23,12 +23,35 @@ export default function Category(props) {
     function loadProductsForCategory() {
       return API.get("gbk-api", `/products/${props.match.params.id}`);
     }
+    function loadPhotos() {
+      return API.get("gbk-api", "/photos");
+    }
+    function loadProductsToPhotos() {
+      return API.get("gbk-api", "/productsToPhotos");
+    }
     async function onLoad() {
       try {
-        const [category, products] = await Promise.all([loadCategory(), loadProductsForCategory()]);
+        const [category, products, photos, photosForProducts] = await Promise.all([
+          loadCategory(), loadProductsForCategory(), loadPhotos(), loadProductsToPhotos(),
+        ]);
         const { categoryName, categoryPhoto } = category;
         if (categoryPhoto) {
           category.categoryPhotoURL = await Storage.vault.get(categoryPhoto);
+        }
+        const promises = [];
+        products.forEach((product) => {
+          const photoIds = photosForProducts
+            .filter(photoToProduct => photoToProduct.productId === product.productId)
+            .map(photoToProduct => photoToProduct.photoId);
+          photoIds.forEach((photoId) => {
+            const photosForThisProduct = photos.filter(photo => photo.photoId === photoId);
+            const firstPhoto = photosForThisProduct && photosForThisProduct[0] && photosForThisProduct[0].photoName;
+            promises.push(firstPhoto && Storage.vault.get(firstPhoto));
+          });
+        });
+        const results = await Promise.all(promises);
+        for (let i = 0; i < products.length; i++) {
+          products[i].productPhoto = results[i];
         }
         setCategoryName(categoryName);
         setCategory(category);
@@ -104,28 +127,25 @@ export default function Category(props) {
   }
 
   function renderProductsList(products) {
-    return [{}].concat(products).map((product, i) =>
-      i !== 0 ? (
-        <LinkContainer key={product.productId} to={`/products/${product.productId}`}>
-          <ListGroupItem header={product.productName.trim().split("\n")[0]}>
-            {"Created: " + new Date(product.createdAt).toLocaleString()}
-          </ListGroupItem>
-        </LinkContainer>
-      ) : (
-        <LinkContainer key="new" to={`/products/new/${category.categoryId}`}>
-          <ListGroupItem>
-            <h4>
-              <b>{"\uFF0B"}</b> Create a new product
-            </h4>
-          </ListGroupItem>
-        </LinkContainer>
-      )
+    return (
+      <ItemsList
+        items={products.map(product => ({
+          id: product.productId,
+          name: product.productName,
+          photo: product.productPhoto,
+          url: `/products/${product.productId}`,
+        }))}
+        newItemUrl={`/products/new/${category.categoryId}`}
+        size="small"
+        alignment="left"
+      />
     );
   }
 
   function renderProducts() {
     return (
       <div className="products">
+        <PageHeader>Products</PageHeader>
         <ListGroup>
           {renderProductsList(products)}
         </ListGroup>
@@ -133,53 +153,63 @@ export default function Category(props) {
     );
   }
 
+  function renderCategoryDetails() {
+    return (
+      <form onSubmit={handleSubmit}>
+        <PageHeader>Category Details</PageHeader>
+        <FormGroup controlId="categoryName">
+          <ControlLabel>Name</ControlLabel>
+          <FormControl
+            value={categoryName}
+            type="text"
+            onChange={e => setCategoryName(e.target.value)}
+          />
+        </FormGroup>
+        <FormGroup controlId="file">
+          <ControlLabel>Image</ControlLabel>
+          <FormControl onChange={handleFileChange} type="file" />
+          {(category.categoryPhoto || file) && (
+            <FormControl.Static>
+              <img
+                src={file ? URL.createObjectURL(file) : category.categoryPhotoURL}
+                alt={formatFilename(category.categoryPhoto)}
+                height={150}
+              />
+            </FormControl.Static>
+          )}
+        </FormGroup>
+        <LoaderButton
+          block
+          type="submit"
+          bsSize="large"
+          bsStyle="primary"
+          isLoading={isLoading}
+          disabled={!validateForm()}
+        >
+          Save
+        </LoaderButton>
+        <LoaderButton
+          block
+          bsSize="large"
+          bsStyle="danger"
+          onClick={handleDelete}
+          isLoading={isDeleting}
+        >
+          Delete
+        </LoaderButton>
+      </form>
+    );
+  }
+
   return (
     <div className="Category">
       {category && (
-        <form onSubmit={handleSubmit}>
-          <FormGroup controlId="categoryName">
-            <ControlLabel>Name</ControlLabel>
-            <FormControl
-              value={categoryName}
-              type="text"
-              onChange={e => setCategoryName(e.target.value)}
-            />
-          </FormGroup>
-          <FormGroup controlId="file">
-            <ControlLabel>Photo</ControlLabel>
-            <FormControl onChange={handleFileChange} type="file" />
-            {(category.categoryPhoto || file) && (
-              <FormControl.Static>
-                <img
-                  src={file ? URL.createObjectURL(file) : category.categoryPhotoURL}
-                  alt={formatFilename(category.categoryPhoto)}
-                  height={150}
-                />
-              </FormControl.Static>
-            )}
-          </FormGroup>
-          <LoaderButton
-            block
-            type="submit"
-            bsSize="large"
-            bsStyle="primary"
-            isLoading={isLoading}
-            disabled={!validateForm()}
-          >
-            Save
-          </LoaderButton>
-          <LoaderButton
-            block
-            bsSize="large"
-            bsStyle="danger"
-            onClick={handleDelete}
-            isLoading={isDeleting}
-          >
-            Delete
-          </LoaderButton>
-        </form>
+        <>
+          {renderCategoryDetails()}
+          {<div className="divider" />}
+          {renderProducts()}
+        </>
       )}
-      {category && renderProducts()}
     </div>
   );
 }
