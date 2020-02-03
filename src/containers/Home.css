@@ -24,6 +24,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 100px;
 }
 
 .Home .categories .list-group-item {
@@ -51,6 +53,7 @@
 
 .Home .categories .list-group-item .new-category {
   font-weight: bold;
+  font-size: 36px;
 }
 
 .Home .categories .list-group-item:hover .new-category {
