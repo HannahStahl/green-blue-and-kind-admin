@@ -43,11 +43,9 @@ export default function Category(props) {
           const photoIds = photosForProducts
             .filter(photoToProduct => photoToProduct.productId === product.productId)
             .map(photoToProduct => photoToProduct.photoId);
-          photoIds.forEach((photoId) => {
-            const photosForThisProduct = photos.filter(photo => photo.photoId === photoId);
-            const firstPhoto = photosForThisProduct && photosForThisProduct[0] && photosForThisProduct[0].photoName;
-            promises.push(firstPhoto && Storage.vault.get(firstPhoto));
-          });
+          const firstPhotoId = photoIds[0];
+          const firstPhoto = firstPhotoId && photos.find(photo => photo.photoId === firstPhotoId);
+          promises.push(firstPhoto && Storage.vault.get(firstPhoto.photoName));
         });
         const results = await Promise.all(promises);
         for (let i = 0; i < products.length; i++) {
