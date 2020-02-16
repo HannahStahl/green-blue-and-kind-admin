@@ -13,7 +13,8 @@ export default function Category(props) {
   const [category, setCategory] = useState(null);
   const [categoryName, setCategoryName] = useState("");
   const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -86,22 +87,27 @@ export default function Category(props) {
     });
   }
 
-  async function handleSubmit(event) {
+  async function handleSubmit(categoryPublished) {
     let categoryPhoto;
-    event.preventDefault();
-    setIsLoading(true);
+    if (categoryPublished) {
+      setIsSaving(true);
+    } else {
+      setIsSavingDraft(true);
+    }
     try {
       if (file) {
         categoryPhoto = await s3Upload(file);
       }
       await saveCategory({
         categoryName,
-        categoryPhoto: categoryPhoto || category.categoryPhoto
+        categoryPhoto: categoryPhoto || category.categoryPhoto,
+        categoryPublished,
       });
       props.history.push("/");
     } catch (e) {
       alert(e);
-      setIsLoading(false);
+      setIsSaving(false);
+      setIsSavingDraft(false);
     }
   }
 
@@ -154,7 +160,7 @@ export default function Category(props) {
 
   function renderCategoryDetails() {
     return (
-      <form onSubmit={handleSubmit}>
+      <form>
         <PageHeader>Category Details</PageHeader>
         <FormGroup controlId="categoryName">
           <ControlLabel>Name</ControlLabel>
@@ -179,13 +185,23 @@ export default function Category(props) {
         </FormGroup>
         <LoaderButton
           block
-          type="submit"
+          onClick={() => handleSubmit(false)}
           bsSize="large"
-          bsStyle="primary"
-          isLoading={isLoading}
+          bsStyle="warning"
+          isLoading={isSavingDraft}
           disabled={!validateForm()}
         >
-          Save
+          {category.categoryPublished ? 'Save & Unpublish' : 'Save Draft'}
+        </LoaderButton>
+        <LoaderButton
+          block
+          onClick={() => handleSubmit(true)}
+          bsSize="large"
+          bsStyle="primary"
+          isLoading={isSaving}
+          disabled={!validateForm()}
+        >
+          {category.categoryPublished ? 'Save' : 'Save & Publish'}
         </LoaderButton>
         <LoaderButton
           block

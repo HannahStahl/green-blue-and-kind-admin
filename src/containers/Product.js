@@ -25,7 +25,8 @@ export default function Product(props) {
   const [productTags, setProductTags] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
   const [productPhotos, setProductPhotos] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -245,9 +246,7 @@ export default function Product(props) {
     });
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault();
-
+  async function handleSubmit(productPublished) {
     let updatedProductPhotos = productPhotos.map(productPhoto => ({
       name: productPhoto.name, url: productPhoto.url,
     }));
@@ -258,7 +257,11 @@ export default function Product(props) {
           photoUploadPromises.push(s3Upload(productPhoto));
         }
       });
-      setIsLoading(true);
+      if (productPublished) {
+        setIsSaving(true);
+      } else {
+        setIsSavingDraft(true);
+      }
       const photoURLs = await Promise.all(photoUploadPromises);
       let photoURLsIndex = 0;
       productPhotos.forEach((productPhoto, index) => {
@@ -268,8 +271,12 @@ export default function Product(props) {
         }
       });
     }
-    
-    setIsLoading(true);
+
+    if (productPublished) {
+      setIsSaving(true);
+    } else {
+      setIsSavingDraft(true);
+    }
 
     try {
       await Promise.all([
@@ -279,6 +286,7 @@ export default function Product(props) {
           productPrice: productPrice !== "" ? productPrice : undefined,
           productSalePrice: productSalePrice !== "" ? productSalePrice : undefined,
           productOnSale,
+          productPublished,
           categoryId,
         }),
         savePhotos(updatedProductPhotos),
@@ -289,7 +297,8 @@ export default function Product(props) {
       props.history.push("/");
     } catch (e) {
       alert(e);
-      setIsLoading(false);
+      setIsSaving(false);
+      setIsSavingDraft(false);
     }
   }
 
@@ -323,7 +332,7 @@ export default function Product(props) {
     <div className="Product">
       <PageHeader>Edit Product</PageHeader>
       {product && (
-        <form onSubmit={handleSubmit}>
+        <form>
           <div className="form-fields">
             <div className="left-half">
               <FormGroup controlId="categoryId">
@@ -421,13 +430,23 @@ export default function Product(props) {
           </div>
             <LoaderButton
               block
-              type="submit"
+              onClick={() => handleSubmit(false)}
               bsSize="large"
-              bsStyle="primary"
-              isLoading={isLoading}
+              bsStyle="warning"
+              isLoading={isSavingDraft}
               disabled={!validateForm()}
             >
-              Save
+              {product.productPublished ? 'Save & Unpublish' : 'Save Draft'}
+            </LoaderButton>
+            <LoaderButton
+              block
+              onClick={() => handleSubmit(true)}
+              bsSize="large"
+              bsStyle="primary"
+              isLoading={isSaving}
+              disabled={!validateForm()}
+            >
+              {product.productPublished ? 'Save' : 'Save & Publish'}
             </LoaderButton>
             <LoaderButton
               block

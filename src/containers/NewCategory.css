@@ -20,3 +20,7 @@
 .NewCategory .page-header {
   text-align: center;
 }
+
+.NewCategory .note {
+  margin-top: 20px;
+}

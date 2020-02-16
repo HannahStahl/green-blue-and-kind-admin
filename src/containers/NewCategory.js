@@ -81,6 +81,7 @@ export default function NewCategory(props) {
         >
           Create
         </LoaderButton>
+        <p className="note">Note: This category will not show up on your site yet.</p>
       </form>
     </div>
   );
