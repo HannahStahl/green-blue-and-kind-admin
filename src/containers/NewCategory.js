@@ -13,7 +13,7 @@ export default function NewCategory(props) {
   const [isLoading, setIsLoading] = useState(false);
 
   function validateForm() {
-    return categoryName.length > 0 && file;
+    return categoryName.length > 0;
   }
 
   function handleFileChange(event) {

@@ -17,7 +17,7 @@ export default function Home(props) {
         const categories = await loadCategories();
         const promises = [];
         categories.forEach((category) => {
-          promises.push(Storage.vault.get(category.categoryPhoto));
+          promises.push(category.categoryPhoto && Storage.vault.get(category.categoryPhoto));
         });
         const photos = await Promise.all(promises);
         categories.forEach((category, index) => {

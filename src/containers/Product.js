@@ -168,7 +168,11 @@ export default function Product(props) {
     onLoad();
   }, [props.match.params.id]);
 
-  function validateForm() {
+  function validateDraftForm() {
+    return productName.length > 0;
+  }
+
+  function validatePublishForm() {
     return (
       productName.length > 0
       && productDescription.length > 0
@@ -434,7 +438,7 @@ export default function Product(props) {
               bsSize="large"
               bsStyle="warning"
               isLoading={isSavingDraft}
-              disabled={!validateForm()}
+              disabled={!validateDraftForm()}
             >
               {product.productPublished ? 'Save & Unpublish' : 'Save Draft'}
             </LoaderButton>
@@ -444,7 +448,7 @@ export default function Product(props) {
               bsSize="large"
               bsStyle="primary"
               isLoading={isSaving}
-              disabled={!validateForm()}
+              disabled={!validatePublishForm()}
             >
               {product.productPublished ? 'Save' : 'Save & Publish'}
             </LoaderButton>

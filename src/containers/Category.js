@@ -62,12 +62,12 @@ export default function Category(props) {
     onLoad();
   }, [props.match.params.id]);
 
-  function validateForm() {
-    return categoryName.length > 0 && (category.categoryPhotoURL || file);
+  function validateDraftForm() {
+    return categoryName.length > 0;
   }
 
-  function formatFilename(str) {
-    return str.replace(/^\w+-/, "");
+  function validatePublishForm() {
+    return categoryName.length > 0 && (category.categoryPhotoURL || file);
   }
 
   function handleFileChange(event) {
@@ -177,14 +177,14 @@ export default function Category(props) {
             <FormControl.Static>
               <img
                 src={file ? URL.createObjectURL(file) : category.categoryPhotoURL}
-                alt={formatFilename(category.categoryPhoto)}
+                alt={categoryName}
                 height={150}
               />
             </FormControl.Static>
           )}
         </FormGroup>
-        {products.length === 0 && (
-          <p>Note: Category will remain in Draft state until it has at least one product.</p>
+        {products.filter((product) => product.productPublished).length === 0 && (
+          <p>Note: Category will remain in Draft state until it has at least one published product.</p>
         )}
         <LoaderButton
           block
@@ -192,18 +192,18 @@ export default function Category(props) {
           bsSize="large"
           bsStyle="warning"
           isLoading={isSavingDraft}
-          disabled={!validateForm()}
+          disabled={!validateDraftForm()}
         >
           {category.categoryPublished ? 'Save & Unpublish' : 'Save Draft'}
         </LoaderButton>
-        {products.length > 0 && (
+        {products.filter((product) => product.productPublished).length > 0 && (
             <LoaderButton
             block
             onClick={() => handleSubmit(true)}
             bsSize="large"
             bsStyle="primary"
             isLoading={isSaving}
-            disabled={!validateForm()}
+            disabled={!validatePublishForm()}
           >
             {category.categoryPublished ? 'Save' : 'Save & Publish'}
           </LoaderButton>
