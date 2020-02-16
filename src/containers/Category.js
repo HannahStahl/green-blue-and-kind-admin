@@ -183,6 +183,9 @@ export default function Category(props) {
             </FormControl.Static>
           )}
         </FormGroup>
+        {products.length === 0 && (
+          <p>Note: Category will remain in Draft state until it has at least one product.</p>
+        )}
         <LoaderButton
           block
           onClick={() => handleSubmit(false)}
@@ -193,16 +196,18 @@ export default function Category(props) {
         >
           {category.categoryPublished ? 'Save & Unpublish' : 'Save Draft'}
         </LoaderButton>
-        <LoaderButton
-          block
-          onClick={() => handleSubmit(true)}
-          bsSize="large"
-          bsStyle="primary"
-          isLoading={isSaving}
-          disabled={!validateForm()}
-        >
-          {category.categoryPublished ? 'Save' : 'Save & Publish'}
-        </LoaderButton>
+        {products.length > 0 && (
+            <LoaderButton
+            block
+            onClick={() => handleSubmit(true)}
+            bsSize="large"
+            bsStyle="primary"
+            isLoading={isSaving}
+            disabled={!validateForm()}
+          >
+            {category.categoryPublished ? 'Save' : 'Save & Publish'}
+          </LoaderButton>
+        )}
         <LoaderButton
           block
           bsSize="large"
