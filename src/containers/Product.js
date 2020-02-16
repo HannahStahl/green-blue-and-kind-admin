@@ -185,7 +185,8 @@ export default function Product(props) {
     const files = Array.from(event.target.files);
     while (i < files.length && !nonImageFound) {
       const file = files[i];
-      const fileExtension = file.name.toLowerCase().split('.')[1];
+      const splitFileName = file.name.toLowerCase().split('.');
+      const fileExtension = splitFileName[splitFileName.length - 1];
       if (!["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
         nonImageFound = true;
       }

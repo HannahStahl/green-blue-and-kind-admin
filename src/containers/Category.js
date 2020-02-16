@@ -71,7 +71,8 @@ export default function Category(props) {
 
   function handleFileChange(event) {
     const file = event.target.files[0];
-    const fileExtension = file.name.toLowerCase().split('.')[1];
+    const splitFileName = file.name.toLowerCase().split('.');
+    const fileExtension = splitFileName[splitFileName.length - 1];
     if (!["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
       alert(`Please upload an image file.`);
       return;
