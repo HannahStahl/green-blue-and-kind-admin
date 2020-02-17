@@ -51,7 +51,9 @@ export default function Home(props) {
   function renderCategories() {
     return (
       <div className="categories">
-        <h1 className="page-header">Product Categories</h1>
+        <div className="page-header">
+          <h1>Product Categories</h1>
+        </div>
         {!isLoading && renderCategoriesList(categories)}
       </div>
     );

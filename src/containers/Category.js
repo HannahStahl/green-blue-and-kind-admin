@@ -145,10 +145,12 @@ export default function Category(props) {
   function renderProducts() {
     return (
       <div className="products">
-        <h1 className="page-header">Products</h1>
-        <ListGroup>
-          {renderProductsList(products)}
-        </ListGroup>
+        <Form.Group>
+          <Form.Label>Products</Form.Label>
+          <ListGroup>
+            {renderProductsList(products)}
+          </ListGroup>
+        </Form.Group>
       </div>
     );
   }
@@ -156,7 +158,6 @@ export default function Category(props) {
   function renderCategoryDetails() {
     return (
       <Form>
-        <h1 className="page-header">Category Details</h1>
         <Form.Group controlId="categoryName">
           <Form.Label>Name</Form.Label>
           <Form.Control
@@ -168,59 +169,64 @@ export default function Category(props) {
         <Form.Group controlId="file">
           <Form.Label>Image</Form.Label>
           <Form.Control onChange={handleFileChange} type="file" />
-          <img
-            src={file ? URL.createObjectURL(file) : category.categoryPhotoURL}
-            alt={categoryName}
-            height={150}
-          />
+          {(file || category.categoryPhotoURL) && (
+            <img
+              src={file ? URL.createObjectURL(file) : category.categoryPhotoURL}
+              alt={categoryName}
+              height={150}
+            />
+          )}
         </Form.Group>
-        <div className="form-buttons">
-          {products.filter((product) => product.productPublished).length === 0 && (
-            <p>Note: Category will remain in Draft state until it has at least one published product.</p>
-          )}
-          <LoaderButton
-            block
-            onClick={() => handleSubmit(false)}
-            size="lg"
-            variant="outline-secondary"
-            isLoading={isSavingDraft}
-            disabled={!validateDraftForm()}
-          >
-            {category.categoryPublished ? 'Save & Unpublish' : 'Save Draft'}
-          </LoaderButton>
-          {products.filter((product) => product.productPublished).length > 0 && (
-              <LoaderButton
-              block
-              onClick={() => handleSubmit(true)}
-              size="lg"
-              variant="outline-primary"
-              isLoading={isSaving}
-              disabled={!validatePublishForm()}
-            >
-              {category.categoryPublished ? 'Save' : 'Save & Publish'}
-            </LoaderButton>
-          )}
-          <LoaderButton
-            block
-            size="lg"
-            variant="outline-danger"
-            onClick={handleDelete}
-            isLoading={isDeleting}
-          >
-            Delete
-          </LoaderButton>
-        </div>
       </Form>
     );
   }
 
   return (
     <div className="Category">
+      <div className="page-header">
+        <h1>Edit Category</h1>
+        {category && (
+          <div className="form-buttons">
+            <LoaderButton
+              onClick={() => handleSubmit(false)}
+              size="lg"
+              variant="outline-secondary"
+              isLoading={isSavingDraft}
+              disabled={!validateDraftForm()}
+            >
+              {category.categoryPublished ? 'Save & Unpublish' : 'Save Draft'}
+            </LoaderButton>
+            {products.filter((product) => product.productPublished).length > 0 && (
+              <LoaderButton
+                onClick={() => handleSubmit(true)}
+                size="lg"
+                variant="outline-primary"
+                isLoading={isSaving}
+                disabled={!validatePublishForm()}
+              >
+                {category.categoryPublished ? 'Save' : 'Save & Publish'}
+              </LoaderButton>
+            )}
+            <LoaderButton
+              size="lg"
+              variant="outline-danger"
+              onClick={handleDelete}
+              isLoading={isDeleting}
+            >
+              Delete
+            </LoaderButton>
+          </div>
+        )}
+      </div>
       {category && (
         <>
-          {renderCategoryDetails()}
-          {<div className="divider" />}
-          {renderProducts()}
+          {products.filter((product) => product.productPublished).length === 0 && (
+            <p className="note">Categories can be moved out of Draft state once they have at least one published product.</p>
+          )}
+          <div className="content">
+            {renderCategoryDetails()}
+            {renderProducts()}
+          </div>
         </>
       )}
     </div>

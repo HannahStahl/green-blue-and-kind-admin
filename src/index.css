@@ -27,13 +27,27 @@ input[type=file] {
   padding-bottom: 25px;
   border-bottom: solid 1px #eee;
   margin-bottom: 35px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.page-header h1 {
+  margin-bottom: 0px;
 }
 
 .form-group {
-  margin-top: 30px;
   margin-bottom: 30px;
 }
 
 .form-buttons {
-  margin-top: 50px;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  flex-grow: 1;
+}
+
+.form-buttons button {
+  margin-left: 10px;
+  margin-right: 10px;
 }

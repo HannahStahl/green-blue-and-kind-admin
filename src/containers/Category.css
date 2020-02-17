@@ -1,7 +1,10 @@
 .Category {
-  display: flex;
   height: 100%;
   margin-bottom: 100px;
+}
+
+.Category .content {
+  display: flex;
 }
 
 .Category form {
@@ -35,4 +38,9 @@
 
 .Category .products p {
   color: #666;
+}
+
+.Category .note {
+  margin-bottom: 30px;
+  font-style: italic;
 }

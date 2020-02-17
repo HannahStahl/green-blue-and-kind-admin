@@ -22,6 +22,10 @@
   position: relative;
 }
 
+.ItemsList .list-group.left .list-group-item {
+  margin-left: 0px;
+}
+
 .ItemsList .list-group-item.small {
   width: 25vw;
   max-width: 250px;

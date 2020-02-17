@@ -211,7 +211,29 @@ export default function NewProduct(props) {
 
   return (
     <div className="NewProduct">
-      <h1 className="page-header">Create Product</h1>
+      <div className="page-header">
+        <h1>Create Product</h1>
+        <div className="form-buttons">
+          <LoaderButton
+            onClick={() => handleSubmit(false)}
+            size="lg"
+            variant="outline-secondary"
+            isLoading={isSavingDraft}
+            disabled={!validateDraftForm()}
+          >
+            Save Draft
+          </LoaderButton>
+          <LoaderButton
+            onClick={() => handleSubmit(true)}
+            size="lg"
+            variant="outline-primary"
+            isLoading={isSaving}
+            disabled={!validatePublishForm()}
+          >
+            Publish
+          </LoaderButton>
+        </div>
+      </div>
       <Form>
         <div className="form-fields">
           <div className="left-half">
@@ -307,28 +329,6 @@ export default function NewProduct(props) {
               />
             </Form.Group>
           </div>
-        </div>
-        <div className="form-buttons">
-          <LoaderButton
-            block
-            onClick={() => handleSubmit(false)}
-            size="lg"
-            variant="outline-secondary"
-            isLoading={isSavingDraft}
-            disabled={!validateDraftForm()}
-          >
-            Save Draft
-          </LoaderButton>
-          <LoaderButton
-            block
-            onClick={() => handleSubmit(true)}
-            size="lg"
-            variant="outline-primary"
-            isLoading={isSaving}
-            disabled={!validatePublishForm()}
-          >
-            Publish
-          </LoaderButton>
         </div>
       </Form>
     </div>

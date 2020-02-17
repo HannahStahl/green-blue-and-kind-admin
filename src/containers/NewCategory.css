@@ -1,11 +1,7 @@
-.NewCategory {
-  display: flex;
-  justify-content: center;
-}
-
 .NewCategory form {
   padding-bottom: 15px;
-  width: 400px;
+  width: 470px;
+  min-width: 400px;
 }
 
 .NewCategory form textarea {
@@ -17,10 +13,7 @@
   color: transparent;
 }
 
-.NewCategory .page-header {
-  text-align: center;
-}
-
 .NewCategory .note {
-  margin-top: 20px;
+  margin-bottom: 30px;
+  font-style: italic;
 }

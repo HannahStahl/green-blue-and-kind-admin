@@ -46,8 +46,22 @@ export default function NewCategory(props) {
 
   return (
     <div className="NewCategory">
+      <div className="page-header">
+        <h1>Create Category</h1>
+        <div className="form-buttons">
+          <LoaderButton
+            type="submit"
+            size="lg"
+            variant="outline-secondary"
+            isLoading={isLoading}
+            disabled={!validateForm()}
+          >
+            Save Draft
+          </LoaderButton>
+        </div>
+      </div>
+      <p className="note">Categories can be moved out of Draft state once they have at least one published product.</p>
       <Form onSubmit={handleSubmit}>
-        <h1 className="page-header">New Category</h1>
         <Form.Group controlId="categoryName">
           <Form.Label>Name</Form.Label>
           <Form.Control
@@ -69,17 +83,6 @@ export default function NewCategory(props) {
             </Form.Text>
           )}
         </Form.Group>
-        <LoaderButton
-          block
-          type="submit"
-          size="lg"
-          variant="outline-primary"
-          isLoading={isLoading}
-          disabled={!validateForm()}
-        >
-          Create
-        </LoaderButton>
-        <p className="note">Note: This category will not show up on your site yet.</p>
       </Form>
     </div>
   );

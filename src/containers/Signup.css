@@ -1,8 +1,4 @@
 @media all and (min-width: 480px) {
-  .Signup {
-    padding: 60px 0;
-  }
-
   .Signup form {
     margin: 0 auto;
     max-width: 320px;
@@ -16,5 +12,5 @@
 }
 
 .Signup .page-header {
-  text-align: center;
+  justify-content: center;
 }

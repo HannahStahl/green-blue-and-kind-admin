@@ -327,7 +327,39 @@ export default function Product(props) {
 
   return (
     <div className="Product">
-      <h1 className="page-header">Edit Product</h1>
+      <div className="page-header">
+        <h1>Edit Product</h1>
+        {product && (
+          <div className="form-buttons">
+            <LoaderButton
+              onClick={() => handleSubmit(false)}
+              size="lg"
+              variant="outline-secondary"
+              isLoading={isSavingDraft}
+              disabled={!validateDraftForm()}
+            >
+              {product.productPublished ? 'Save & Unpublish' : 'Save Draft'}
+            </LoaderButton>
+            <LoaderButton
+              onClick={() => handleSubmit(true)}
+              size="lg"
+              variant="outline-primary"
+              isLoading={isSaving}
+              disabled={!validatePublishForm()}
+            >
+              {product.productPublished ? 'Save' : 'Save & Publish'}
+            </LoaderButton>
+            <LoaderButton
+              size="lg"
+              variant="outline-danger"
+              onClick={handleDelete}
+              isLoading={isDeleting}
+            >
+              Delete
+            </LoaderButton>
+          </div>
+        )}
+      </div>
       {product && (
         <Form>
           <div className="form-fields">
@@ -424,37 +456,6 @@ export default function Product(props) {
                 />
               </Form.Group>
             </div>
-          </div>
-          <div className="form-buttons">
-            <LoaderButton
-              block
-              onClick={() => handleSubmit(false)}
-              size="lg"
-              variant="outline-secondary"
-              isLoading={isSavingDraft}
-              disabled={!validateDraftForm()}
-            >
-              {product.productPublished ? 'Save & Unpublish' : 'Save Draft'}
-            </LoaderButton>
-            <LoaderButton
-              block
-              onClick={() => handleSubmit(true)}
-              size="lg"
-              variant="outline-primary"
-              isLoading={isSaving}
-              disabled={!validatePublishForm()}
-            >
-              {product.productPublished ? 'Save' : 'Save & Publish'}
-            </LoaderButton>
-            <LoaderButton
-              block
-              size="lg"
-              variant="outline-danger"
-              onClick={handleDelete}
-              isLoading={isDeleting}
-            >
-              Delete
-            </LoaderButton>
           </div>
         </Form>
       )}
