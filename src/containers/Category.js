@@ -178,7 +178,7 @@ export default function Category(props) {
           <Form.Control
             value={categoryName}
             type="text"
-            onChange={e => setCategoryName(e.target.value)}
+            onChange={e => !e.target.value.includes('_') && setCategoryName(e.target.value)}
           />
         </Form.Group>
         <Form.Group controlId="file">

@@ -395,7 +395,7 @@ export default function Product(props) {
                 <Form.Control
                   value={productName}
                   type="text"
-                  onChange={e => setProductName(e.target.value)}
+                  onChange={e => !e.target.value.includes('_') && setProductName(e.target.value)}
                 />
               </Form.Group>
               <Form.Group controlId="productDescription">
