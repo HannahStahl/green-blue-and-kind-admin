@@ -13,7 +13,7 @@ const dev = {
     APP_CLIENT_ID: "3le7ad7p8t4d50hbsqjnajjsnj",
     IDENTITY_POOL_ID: "us-east-1:128f9f37-325c-4f00-9c74-f40b7e43b327"
   },
-  cloudfrontURL: "https://d3lgv4qt5prjed.cloudfront.net",
+  cloudfrontURL: "https://d1emv4i9ahobax.cloudfront.net",
 };
 
 const prod = {
@@ -31,7 +31,7 @@ const prod = {
     APP_CLIENT_ID: "7bqsfcmeek0hghv6pl4g5j306s",
     IDENTITY_POOL_ID: "us-east-1:0c94fde4-d85b-4c11-8afb-f2612ea6cf77"
   },
-  cloudfrontURL: "https://d3lgv4qt5prjed.cloudfront.net", // TODO change to prod URL
+  cloudfrontURL: "https://d3v8t7grqk8z3g.cloudfront.net",
 };
 
 // Default to dev if not set
