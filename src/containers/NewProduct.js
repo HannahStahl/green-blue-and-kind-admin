@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { API } from "aws-amplify";
-import {
-  FormGroup, FormControl, ControlLabel, Checkbox, PageHeader,
-} from "react-bootstrap";
+import Form from "react-bootstrap/Form";
 import CreatableSelect from 'react-select/creatable';
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
@@ -213,73 +211,73 @@ export default function NewProduct(props) {
 
   return (
     <div className="NewProduct">
-      <PageHeader>Create Product</PageHeader>
-      <form>
+      <h1 className="page-header">Create Product</h1>
+      <Form>
         <div className="form-fields">
           <div className="left-half">
-            <FormGroup controlId="categoryId">
-              <ControlLabel>Category</ControlLabel>
-              <FormControl
+            <Form.Group controlId="categoryId">
+              <Form.Label>Category</Form.Label>
+              <Form.Control
                 value={categoryId}
-                componentClass="select"
+                as="select"
                 onChange={e => setCategoryId(e.target.value)}
               >
                 {categoryOptions.map(category => (
                   <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
                 ))}
-              </FormControl>
-            </FormGroup>
-            <FormGroup controlId="productName">
-              <ControlLabel>Name</ControlLabel>
-              <FormControl
+              </Form.Control>
+            </Form.Group>
+            <Form.Group controlId="productName">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
                 value={productName}
                 type="text"
                 onChange={e => setProductName(e.target.value)}
               />
-            </FormGroup>
-            <FormGroup controlId="productDescription">
-              <ControlLabel>Description</ControlLabel>
-              <FormControl
+            </Form.Group>
+            <Form.Group controlId="productDescription">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
                 value={productDescription}
-                componentClass="textarea"
+                as="textarea"
                 onChange={e => setProductDescription(e.target.value)}
               />
-            </FormGroup>
-            <FormGroup controlId="productPrice">
-              <ControlLabel>Price</ControlLabel>
-              <FormControl
+            </Form.Group>
+            <Form.Group controlId="productPrice">
+              <Form.Label>Price</Form.Label>
+              <Form.Control
                 value={productPrice}
                 type="number"
                 onChange={e => setProductPrice(e.target.value)}
               />
-            </FormGroup>
-            <FormGroup controlId="productSalePrice">
-              <ControlLabel>Sale Price</ControlLabel>
-              <FormControl
+            </Form.Group>
+            <Form.Group controlId="productSalePrice">
+              <Form.Label>Sale Price</Form.Label>
+              <Form.Control
                 value={productSalePrice}
                 type="number"
                 onChange={e => setProductSalePrice(e.target.value)}
               />
-            </FormGroup>
-            <FormGroup controlId="productOnSale">
-              <Checkbox
+            </Form.Group>
+            <Form.Group controlId="productOnSale">
+              <Form.Check
+                type="checkbox"
                 checked={productOnSale}
                 onChange={e => setProductOnSale(e.target.checked)}
-              >
-                On Sale
-              </Checkbox>
-            </FormGroup>
+                label="On Sale"
+              />
+            </Form.Group>
           </div>
           <div className="right-half">
-            <FormGroup controlId="file">
-              <ControlLabel>Images</ControlLabel>
-              <FormControl onChange={handleFileChange} type="file" multiple />
-            </FormGroup>
+            <Form.Group controlId="file">
+              <Form.Label>Images</Form.Label>
+              <Form.Control onChange={handleFileChange} type="file" multiple />
+            </Form.Group>
             {productPhotos && productPhotos.length > 0 && (
               <PhotoViewer updateItems={setProductPhotos} list={productPhotos} />
             )}
-            <FormGroup controlId="productSizes">
-              <ControlLabel>Sizes</ControlLabel>
+            <Form.Group controlId="productSizes">
+              <Form.Label>Sizes</Form.Label>
               <CreatableSelect
                 isMulti
                 onChange={setProductSizes}
@@ -287,9 +285,9 @@ export default function NewProduct(props) {
                 placeholder=""
                 value={productSizes}
               />
-            </FormGroup>
-            <FormGroup controlId="productColors">
-              <ControlLabel>Colors</ControlLabel>
+            </Form.Group>
+            <Form.Group controlId="productColors">
+              <Form.Label>Colors</Form.Label>
               <CreatableSelect
                 isMulti
                 onChange={setProductColors}
@@ -297,9 +295,9 @@ export default function NewProduct(props) {
                 placeholder=""
                 value={productColors}
               />
-            </FormGroup>
-            <FormGroup controlId="productTags">
-              <ControlLabel>Tags</ControlLabel>
+            </Form.Group>
+            <Form.Group controlId="productTags">
+              <Form.Label>Tags</Form.Label>
               <CreatableSelect
                 isMulti
                 onChange={setProductTags}
@@ -307,30 +305,32 @@ export default function NewProduct(props) {
                 placeholder=""
                 value={productTags}
               />
-            </FormGroup>
+            </Form.Group>
           </div>
         </div>
-        <LoaderButton
-          block
-          onClick={() => handleSubmit(false)}
-          bsSize="large"
-          bsStyle="warning"
-          isLoading={isSavingDraft}
-          disabled={!validateDraftForm()}
-        >
-          Save Draft
-        </LoaderButton>
-        <LoaderButton
-          block
-          onClick={() => handleSubmit(true)}
-          bsSize="large"
-          bsStyle="primary"
-          isLoading={isSaving}
-          disabled={!validatePublishForm()}
-        >
-          Publish
-        </LoaderButton>
-      </form>
+        <div className="form-buttons">
+          <LoaderButton
+            block
+            onClick={() => handleSubmit(false)}
+            size="lg"
+            variant="outline-secondary"
+            isLoading={isSavingDraft}
+            disabled={!validateDraftForm()}
+          >
+            Save Draft
+          </LoaderButton>
+          <LoaderButton
+            block
+            onClick={() => handleSubmit(true)}
+            size="lg"
+            variant="outline-primary"
+            isLoading={isSaving}
+            disabled={!validatePublishForm()}
+          >
+            Publish
+          </LoaderButton>
+        </div>
+      </Form>
     </div>
   );
 }

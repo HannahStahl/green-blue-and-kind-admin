@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Auth } from "aws-amplify";
-import { Link, withRouter } from "react-router-dom";
-import { Nav, Navbar, NavItem } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
+import { withRouter } from "react-router-dom";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
 import Routes from "./Routes";
 import "./App.css";
 
@@ -33,35 +33,37 @@ function App(props) {
 
     userHasAuthenticated(false);
 
-    props.history.push("/login");
+    props.history.push("/");
   }
 
   return (
     !isAuthenticating && (
       <div className="App container">
-        <Navbar fluid collapseOnSelect>
-          <Navbar.Header>
-            <Navbar.Brand>
-              <Link to="/">Home</Link>
+        {isAuthenticated && (
+          <Navbar collapseOnSelect expand="lg">
+            <Navbar.Brand href="/">
+            <img
+              alt="Green, Blue, and Kind"
+              src={`${process.env.PUBLIC_URL}/logo.png`}
+              height="50"
+            />
             </Navbar.Brand>
-            <Navbar.Toggle />
-          </Navbar.Header>
-          <Navbar.Collapse>
-            <Nav pullRight>
-              {isAuthenticated ? (
-                <>
-                  <NavItem onClick={handleLogout}>Logout</NavItem>
-                </>
-              ) : (
-                <>
-                  <LinkContainer to="/login">
-                    <NavItem>Login</NavItem>
-                  </LinkContainer>
-                </>
-              )}
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse>
+              <Nav>
+                {isAuthenticated ? (
+                  <Nav.Item onClick={handleLogout}>
+                    <Nav.Link>Log out</Nav.Link>
+                  </Nav.Item>
+                ) : (
+                  <Nav.Item>
+                    <Nav.Link href="/">Log in</Nav.Link>
+                  </Nav.Item>
+                )}
+              </Nav>
+            </Navbar.Collapse>
+          </Navbar>
+        )}
         <Routes appProps={{ isAuthenticated, userHasAuthenticated }} />
       </div>
     )

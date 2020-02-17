@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { API } from "aws-amplify";
-import { PageHeader } from "react-bootstrap";
 import "./Home.css";
 import ItemsList from "../components/ItemsList";
+import Login from "./Login";
 
 export default function Home(props) {
   const [categories, setCategories] = useState([]);
@@ -45,17 +45,13 @@ export default function Home(props) {
   }
 
   function renderLander() {
-    return (
-      <div className="lander">
-        <h1>Product Management Console</h1>
-      </div>
-    );
+    return <Login isAuthenticated={props.isAuthenticated} userHasAuthenticated={props.userHasAuthenticated} />;
   }
 
   function renderCategories() {
     return (
       <div className="categories">
-        <PageHeader>Product Categories</PageHeader>
+        <h1 className="page-header">Product Categories</h1>
         {!isLoading && renderCategoriesList(categories)}
       </div>
     );

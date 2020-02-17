@@ -1,6 +1,6 @@
 {
-  "short_name": "Product Management Console",
-  "name": "Product Management Console",
+  "short_name": "Admin Console",
+  "name": "Admin Console",
   "icons": [
     {
       "src": "android-chrome-192x192.png",

@@ -1,6 +1,6 @@
 import React from "react";
 import { LinkContainer } from "react-router-bootstrap";
-import { ListGroup, ListGroupItem } from "react-bootstrap";
+import ListGroup from "react-bootstrap/ListGroup";
 import config from '../config';
 import "./ItemsList.css";
 
@@ -11,18 +11,18 @@ export default function ItemsList({ items, newItemUrl, size, alignment }) {
         {[{}].concat(items).map((item, i) =>
           i !== 0 ? (
             <LinkContainer key={item.id} to={item.url}>
-              <ListGroupItem className={size}>
+              <ListGroup.Item className={size}>
                 {item.photo && <img src={`${config.cloudfrontURL}/${item.photo}`} alt={item.name} />}
                 <div className="item-name">
                   <h4>{item.name.trim().split("\n")[0]}</h4>
                 </div>
-              </ListGroupItem>
+              </ListGroup.Item>
             </LinkContainer>
           ) : (
             <LinkContainer key="new" to={newItemUrl}>
-              <ListGroupItem className={size}>
+              <ListGroup.Item className={size}>
                 <h4 className="new-item">{"\uFF0B New"}</h4>
-              </ListGroupItem>
+              </ListGroup.Item>
             </LinkContainer>
           )
         )}

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { API } from "aws-amplify";
-import {
-  ListGroup, FormGroup, FormControl, ControlLabel, PageHeader,
-} from "react-bootstrap";
+import Form from "react-bootstrap/Form";
+import ListGroup from "react-bootstrap/ListGroup";
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import "./Category.css";
@@ -146,7 +145,7 @@ export default function Category(props) {
   function renderProducts() {
     return (
       <div className="products">
-        <PageHeader>Products</PageHeader>
+        <h1 className="page-header">Products</h1>
         <ListGroup>
           {renderProductsList(products)}
         </ListGroup>
@@ -156,64 +155,62 @@ export default function Category(props) {
 
   function renderCategoryDetails() {
     return (
-      <form>
-        <PageHeader>Category Details</PageHeader>
-        <FormGroup controlId="categoryName">
-          <ControlLabel>Name</ControlLabel>
-          <FormControl
+      <Form>
+        <h1 className="page-header">Category Details</h1>
+        <Form.Group controlId="categoryName">
+          <Form.Label>Name</Form.Label>
+          <Form.Control
             value={categoryName}
             type="text"
             onChange={e => setCategoryName(e.target.value)}
           />
-        </FormGroup>
-        <FormGroup controlId="file">
-          <ControlLabel>Image</ControlLabel>
-          <FormControl onChange={handleFileChange} type="file" />
-          {(category.categoryPhoto || file) && (
-            <FormControl.Static>
-              <img
-                src={file ? URL.createObjectURL(file) : category.categoryPhotoURL}
-                alt={categoryName}
-                height={150}
-              />
-            </FormControl.Static>
+        </Form.Group>
+        <Form.Group controlId="file">
+          <Form.Label>Image</Form.Label>
+          <Form.Control onChange={handleFileChange} type="file" />
+          <img
+            src={file ? URL.createObjectURL(file) : category.categoryPhotoURL}
+            alt={categoryName}
+            height={150}
+          />
+        </Form.Group>
+        <div className="form-buttons">
+          {products.filter((product) => product.productPublished).length === 0 && (
+            <p>Note: Category will remain in Draft state until it has at least one published product.</p>
           )}
-        </FormGroup>
-        {products.filter((product) => product.productPublished).length === 0 && (
-          <p>Note: Category will remain in Draft state until it has at least one published product.</p>
-        )}
-        <LoaderButton
-          block
-          onClick={() => handleSubmit(false)}
-          bsSize="large"
-          bsStyle="warning"
-          isLoading={isSavingDraft}
-          disabled={!validateDraftForm()}
-        >
-          {category.categoryPublished ? 'Save & Unpublish' : 'Save Draft'}
-        </LoaderButton>
-        {products.filter((product) => product.productPublished).length > 0 && (
-            <LoaderButton
+          <LoaderButton
             block
-            onClick={() => handleSubmit(true)}
-            bsSize="large"
-            bsStyle="primary"
-            isLoading={isSaving}
-            disabled={!validatePublishForm()}
+            onClick={() => handleSubmit(false)}
+            size="lg"
+            variant="outline-secondary"
+            isLoading={isSavingDraft}
+            disabled={!validateDraftForm()}
           >
-            {category.categoryPublished ? 'Save' : 'Save & Publish'}
+            {category.categoryPublished ? 'Save & Unpublish' : 'Save Draft'}
           </LoaderButton>
-        )}
-        <LoaderButton
-          block
-          bsSize="large"
-          bsStyle="danger"
-          onClick={handleDelete}
-          isLoading={isDeleting}
-        >
-          Delete
-        </LoaderButton>
-      </form>
+          {products.filter((product) => product.productPublished).length > 0 && (
+              <LoaderButton
+              block
+              onClick={() => handleSubmit(true)}
+              size="lg"
+              variant="outline-primary"
+              isLoading={isSaving}
+              disabled={!validatePublishForm()}
+            >
+              {category.categoryPublished ? 'Save' : 'Save & Publish'}
+            </LoaderButton>
+          )}
+          <LoaderButton
+            block
+            size="lg"
+            variant="outline-danger"
+            onClick={handleDelete}
+            isLoading={isDeleting}
+          >
+            Delete
+          </LoaderButton>
+        </div>
+      </Form>
     );
   }
 

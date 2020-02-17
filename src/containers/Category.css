@@ -7,7 +7,7 @@
 .Category form {
   padding-bottom: 15px;
   width: 400px;
-  min-width: 300px;
+  min-width: 350px;
   margin-right: 60px;
 }
 
@@ -26,12 +26,11 @@
 }
 
 .Category .products h4 {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 600;
   overflow: hidden;
   line-height: 1.5;
   white-space: nowrap;
   text-overflow: ellipsis;
+  margin-bottom: 0px;
 }
 
 .Category .products p {

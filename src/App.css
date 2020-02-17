@@ -5,3 +5,7 @@
 .App .navbar-brand {
   font-weight: bold;
 }
+
+.App .navbar-collapse {
+  justify-content: flex-end;
+}

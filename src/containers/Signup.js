@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { Auth } from "aws-amplify";
-import {
-  HelpBlock,
-  FormGroup,
-  FormControl,
-  ControlLabel
-} from "react-bootstrap";
+import Form from "react-bootstrap/Form";
 import LoaderButton from "../components/LoaderButton";
 import { useFormFields } from "../libs/hooksLib";
 import "./Signup.css";
@@ -69,73 +64,76 @@ export default function Signup(props) {
 
   function renderConfirmationForm() {
     return (
-      <form onSubmit={handleConfirmationSubmit}>
-        <FormGroup controlId="confirmationCode" bsSize="large">
-          <ControlLabel>Confirmation Code</ControlLabel>
-          <FormControl
+      <Form onSubmit={handleConfirmationSubmit}>
+        <Form.Group controlId="confirmationCode" size="large">
+          <Form.Label>Confirmation Code</Form.Label>
+          <Form.Control
             autoFocus
             type="tel"
             onChange={handleFieldChange}
             value={fields.confirmationCode}
           />
-          <HelpBlock>Please check your email for the code.</HelpBlock>
-        </FormGroup>
+          <p>Please check your email for the code.</p>
+        </Form.Group>
         <LoaderButton
           block
           type="submit"
-          bsSize="large"
+          size="lg"
+          variant="outline-primary"
           isLoading={isLoading}
           disabled={!validateConfirmationForm()}
         >
           Verify
         </LoaderButton>
-      </form>
+      </Form>
     );
   }
 
   function renderForm() {
     return (
-      <form onSubmit={handleSubmit}>
-        <FormGroup controlId="email" bsSize="large">
-          <ControlLabel>Email</ControlLabel>
-          <FormControl
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="email" size="large">
+          <Form.Label>Email</Form.Label>
+          <Form.Control
             autoFocus
             type="email"
             value={fields.email}
             onChange={handleFieldChange}
           />
-        </FormGroup>
-        <FormGroup controlId="password" bsSize="large">
-          <ControlLabel>Password</ControlLabel>
-          <FormControl
+        </Form.Group>
+        <Form.Group controlId="password" size="large">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
             type="password"
             value={fields.password}
             onChange={handleFieldChange}
           />
-        </FormGroup>
-        <FormGroup controlId="confirmPassword" bsSize="large">
-          <ControlLabel>Confirm Password</ControlLabel>
-          <FormControl
+        </Form.Group>
+        <Form.Group controlId="confirmPassword" size="large">
+          <Form.Label>Confirm Password</Form.Label>
+          <Form.Control
             type="password"
             onChange={handleFieldChange}
             value={fields.confirmPassword}
           />
-        </FormGroup>
+        </Form.Group>
         <LoaderButton
           block
           type="submit"
-          bsSize="large"
+          size="lg"
+          variant="outline-primary"
           isLoading={isLoading}
           disabled={!validateForm()}
         >
-          Signup
+          Sign up
         </LoaderButton>
-      </form>
+      </Form>
     );
   }
 
   return (
     <div className="Signup">
+      <h1 className="page-header">Register New User</h1>
       {newUser === null ? renderForm() : renderConfirmationForm()}
     </div>
   );
