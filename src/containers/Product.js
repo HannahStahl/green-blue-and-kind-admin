@@ -254,7 +254,7 @@ export default function Product(props) {
   }
 
   async function handleSubmit(productPublished) {
-    if (productName !== product.productName && productNameExists()) {
+    if (productName.toLowerCase() !== product.productName.toLowerCase() && productNameExists()) {
       window.alert('A product by this name already exists in this category.');
       return;
     }

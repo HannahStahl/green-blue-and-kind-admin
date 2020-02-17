@@ -10,6 +10,7 @@ import config from '../config';
 
 export default function Category(props) {
   const [file, setFile] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState(null);
   const [categoryName, setCategoryName] = useState("");
   const [products, setProducts] = useState([]);
@@ -18,6 +19,9 @@ export default function Category(props) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    function loadCategories() {
+      return API.get("gbk-api", "/categories");
+    }
     function loadCategory() {
       return API.get("gbk-api", `/category/${props.match.params.id}`);
     }
@@ -32,8 +36,8 @@ export default function Category(props) {
     }
     async function onLoad() {
       try {
-        const [category, products, photos, photosForProducts] = await Promise.all([
-          loadCategory(), loadProductsForCategory(), loadPhotos(), loadProductsToPhotos(),
+        const [categories, category, products, photos, photosForProducts] = await Promise.all([
+          loadCategories(), loadCategory(), loadProductsForCategory(), loadPhotos(), loadProductsToPhotos(),
         ]);
         const { categoryName, categoryPhoto } = category;
         if (categoryPhoto) {
@@ -47,6 +51,7 @@ export default function Category(props) {
           const firstPhoto = firstPhotoId && photos.find(photo => photo.photoId === firstPhotoId);
           products[i].productPhoto = firstPhoto && firstPhoto.photoName;
         });
+        setCategories(categories);
         setCategoryName(categoryName);
         setCategory(category);
         setProducts(products);
@@ -82,7 +87,17 @@ export default function Category(props) {
     });
   }
 
+  function categoryNameExists() {
+    const lowercaseName = categoryName.toLowerCase();
+    const lowercaseNames = categories.map((categoryInList) => categoryInList.categoryName.toLowerCase());
+    return lowercaseNames.includes(lowercaseName);
+  }
+
   async function handleSubmit(categoryPublished) {
+    if (categoryName.toLowerCase() !== category.categoryName.toLowerCase() && categoryNameExists()) {
+      window.alert('A category by this name already exists.');
+      return;
+    }
     let categoryPhoto;
     if (categoryPublished) {
       setIsSaving(true);
