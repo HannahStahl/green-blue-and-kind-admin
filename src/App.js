@@ -40,7 +40,7 @@ function App(props) {
     !isAuthenticating && (
       <div className="App container">
         {isAuthenticated && (
-          <Navbar collapseOnSelect expand="lg">
+          <Navbar collapseOnSelect expand="lg" fixed="top">
             <Navbar.Brand href="/">
             <img
               alt="Green, Blue, and Kind"
@@ -64,7 +64,9 @@ function App(props) {
             </Navbar.Collapse>
           </Navbar>
         )}
-        <Routes appProps={{ isAuthenticated, userHasAuthenticated }} />
+        <div style={{ paddingTop: isAuthenticated ? 100 : 0 }}>
+          <Routes appProps={{ isAuthenticated, userHasAuthenticated }} />
+        </div>
       </div>
     )
   );
