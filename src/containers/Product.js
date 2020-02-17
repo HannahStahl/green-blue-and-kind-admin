@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { API, Storage } from "aws-amplify";
+import { API } from "aws-amplify";
 import {
   FormGroup, FormControl, ControlLabel, Checkbox, PageHeader,
 } from "react-bootstrap";
@@ -8,6 +8,7 @@ import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import "./Product.css";
 import PhotoViewer from '../components/PhotoViewer';
+import config from '../config';
 
 export default function Product(props) {
   const [product, setProduct] = useState(null);
@@ -106,15 +107,9 @@ export default function Product(props) {
 
         if (photosForProduct) {
           const productPhotos = [];
-          const photoURLPromises = [];
           photosForProduct.forEach((photoForProduct) => {
             const fileName = photos.find(photo => photo.photoId === photoForProduct.photoId).photoName;
-            productPhotos.push({ name: fileName });
-            photoURLPromises.push(Storage.vault.get(fileName));
-          });
-          const photoURLs = await Promise.all(photoURLPromises);
-          photosForProduct.forEach((photoForProduct, index) => {
-            productPhotos[index].url = photoURLs[index];
+            productPhotos.push({ name: fileName, url: `${config.cloudfrontURL}/${fileName}` });
           });
           setProductPhotos(productPhotos);
         }

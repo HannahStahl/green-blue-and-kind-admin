@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { API, Storage } from "aws-amplify";
+import { API } from "aws-amplify";
 import {
   ListGroup, FormGroup, FormControl, ControlLabel, PageHeader,
 } from "react-bootstrap";
@@ -7,6 +7,7 @@ import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import "./Category.css";
 import ItemsList from "../components/ItemsList";
+import config from '../config';
 
 export default function Category(props) {
   const [file, setFile] = useState(null);
@@ -37,21 +38,16 @@ export default function Category(props) {
         ]);
         const { categoryName, categoryPhoto } = category;
         if (categoryPhoto) {
-          category.categoryPhotoURL = await Storage.vault.get(categoryPhoto);
+          category.categoryPhotoURL = `${config.cloudfrontURL}/${categoryPhoto}`;
         }
-        const promises = [];
-        products.forEach((product) => {
+        products.forEach((product, i) => {
           const photoIds = photosForProducts
             .filter(photoToProduct => photoToProduct.productId === product.productId)
             .map(photoToProduct => photoToProduct.photoId);
           const firstPhotoId = photoIds[0];
           const firstPhoto = firstPhotoId && photos.find(photo => photo.photoId === firstPhotoId);
-          promises.push(firstPhoto && Storage.vault.get(firstPhoto.photoName));
+          products[i].productPhoto = firstPhoto && firstPhoto.photoName;
         });
-        const results = await Promise.all(promises);
-        for (let i = 0; i < products.length; i++) {
-          products[i].productPhoto = results[i];
-        }
         setCategoryName(categoryName);
         setCategory(category);
         setProducts(products);

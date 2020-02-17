@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { API, Storage } from "aws-amplify";
+import { API } from "aws-amplify";
 import { PageHeader } from "react-bootstrap";
 import "./Home.css";
 import ItemsList from "../components/ItemsList";
@@ -15,14 +15,6 @@ export default function Home(props) {
       }
       try {
         const categories = await loadCategories();
-        const promises = [];
-        categories.forEach((category) => {
-          promises.push(category.categoryPhoto && Storage.vault.get(category.categoryPhoto));
-        });
-        const photos = await Promise.all(promises);
-        categories.forEach((category, index) => {
-          categories[index].categoryPhotoObject = photos[index];
-        });
         setCategories(categories);
       } catch (e) {
         alert(e);
@@ -42,7 +34,7 @@ export default function Home(props) {
         items={categories.map(category => ({
           id: category.categoryId,
           name: category.categoryName,
-          photo: category.categoryPhotoObject,
+          photo: category.categoryPhoto,
           url: `/categories/${category.categoryId}`,
         }))}
         newItemUrl="/categories/new"
