@@ -21,7 +21,7 @@ export default function ItemsList({ items, newItemUrl, size, alignment }) {
           ) : (
             <LinkContainer key="new" to={newItemUrl}>
               <ListGroupItem className={size}>
-                <h4 className="new-item">{"\uFF0B"}</h4>
+                <h4 className="new-item">{"\uFF0B New"}</h4>
               </ListGroupItem>
             </LinkContainer>
           )

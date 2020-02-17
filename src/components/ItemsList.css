@@ -38,11 +38,6 @@
   object-fit: cover;
 }
 
-.ItemsList .list-group .list-group-item .new-item {
-  font-weight: bold;
-  font-size: 36px;
-}
-
 .ItemsList .list-group .list-group-item:hover .new-item {
   color: black;
 }
