@@ -10,6 +10,7 @@ import PhotoViewer from '../components/PhotoViewer';
 export default function NewProduct(props) {
   const [categoryId, setCategoryId] = useState(props.match.params.id);
   const [categoryOptions, setCategoryOptions] = useState([]);
+  const [productsInCategory, setProductsInCategory] = useState([]);
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
@@ -30,6 +31,10 @@ export default function NewProduct(props) {
       return API.get("gbk-api", "/categories");
     }
 
+    function loadProducts() {
+      return API.get("gbk-api", `/products/${props.match.params.id}`);
+    }
+
     function loadTags() {
       return API.get("gbk-api", "/tags");
     }
@@ -44,11 +49,13 @@ export default function NewProduct(props) {
 
     async function onLoad() {
       try {
-        const [categories, tags, colors, sizes] = await Promise.all([
-          loadCategories(), loadTags(), loadColors(), loadSizes(),
+        const [categories, productsInCategory, tags, colors, sizes] = await Promise.all([
+          loadCategories(), loadProducts(), loadTags(), loadColors(), loadSizes(),
         ]);
 
         setCategoryOptions(categories);
+
+        setProductsInCategory(productsInCategory);
 
         const tagOptions = tags.map(tag => ({
           value: tag.tagId,
@@ -73,7 +80,7 @@ export default function NewProduct(props) {
     }
 
     onLoad();
-  }, []);
+  }, [props.match.params.id]);
 
   function validateDraftForm() {
     return productName.length > 0;
@@ -111,7 +118,17 @@ export default function NewProduct(props) {
     }
   }
 
+  function productNameExists() {
+    const lowercaseName = productName.toLowerCase();
+    const lowercaseNames = productsInCategory.map((productInCategory) => productInCategory.productName.toLowerCase());
+    return lowercaseNames.includes(lowercaseName);
+  }
+
   async function handleSubmit(productPublished) {
+    if (productNameExists()) {
+      window.alert('A product by this name already exists in this category.');
+      return;
+    }
     let updatedProductPhotos = productPhotos.map(productPhoto => ({
       name: productPhoto.name, url: productPhoto.url,
     }));

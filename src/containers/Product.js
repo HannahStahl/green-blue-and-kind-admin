@@ -12,6 +12,7 @@ export default function Product(props) {
   const [product, setProduct] = useState(null);
   const [categoryId, setCategoryId] = useState("");
   const [categoryOptions, setCategoryOptions] = useState([]);
+  const [productsInCategory, setProductsInCategory] = useState([]);
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
@@ -103,6 +104,8 @@ export default function Product(props) {
           productOnSale,
         } = product;
 
+        const productsInCategory = await API.get("gbk-api", `/products/${categoryId}`);
+
         if (photosForProduct) {
           const productPhotos = [];
           photosForProduct.forEach((photoForProduct) => {
@@ -113,6 +116,7 @@ export default function Product(props) {
         }
 
         setCategoryOptions(categories);
+        setProductsInCategory(productsInCategory);
         setCategoryId(categoryId);
         setProductName(productName || "");
         setProductDescription(productDescription || "");
@@ -243,7 +247,17 @@ export default function Product(props) {
     });
   }
 
+  function productNameExists() {
+    const lowercaseName = productName.toLowerCase();
+    const lowercaseNames = productsInCategory.map((productInCategory) => productInCategory.productName.toLowerCase());
+    return lowercaseNames.includes(lowercaseName);
+  }
+
   async function handleSubmit(productPublished) {
+    if (productName !== product.productName && productNameExists()) {
+      window.alert('A product by this name already exists in this category.');
+      return;
+    }
     let updatedProductPhotos = productPhotos.map(productPhoto => ({
       name: productPhoto.name, url: productPhoto.url,
     }));
