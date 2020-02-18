@@ -7,10 +7,8 @@
 }
 
 .Home .categories h4 {
-  overflow: hidden;
+  text-align: center;
   line-height: 1.5;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   margin: 0;
 }
 .Home .categories p {

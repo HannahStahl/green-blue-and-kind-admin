@@ -29,11 +29,9 @@
 }
 
 .Category .products h4 {
-  overflow: hidden;
   line-height: 1.5;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   margin-bottom: 0px;
+  text-align: center;
 }
 
 .Category .products p {
