@@ -226,6 +226,10 @@ export default function NewProduct(props) {
     });
   }
 
+  function hasProhibitedCharacter(e) {
+    return e.target.value.includes('_') || e.target.value.includes('?');
+  }
+
   return (
     <div className="NewProduct">
       <div className="page-header">
@@ -271,7 +275,7 @@ export default function NewProduct(props) {
               <Form.Control
                 value={productName}
                 type="text"
-                onChange={e => !e.target.value.includes('_') && setProductName(e.target.value)}
+                onChange={e => !hasProhibitedCharacter(e) && setProductName(e.target.value)}
               />
             </Form.Group>
             <Form.Group controlId="productDescription">

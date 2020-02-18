@@ -170,6 +170,10 @@ export default function Category(props) {
     );
   }
 
+  function hasProhibitedCharacter(e) {
+    return e.target.value.includes('_') || e.target.value.includes('?');
+  }
+
   function renderCategoryDetails() {
     return (
       <Form>
@@ -178,7 +182,7 @@ export default function Category(props) {
           <Form.Control
             value={categoryName}
             type="text"
-            onChange={e => !e.target.value.includes('_') && setCategoryName(e.target.value)}
+            onChange={e => !hasProhibitedCharacter(e) && setCategoryName(e.target.value)}
           />
         </Form.Group>
         <Form.Group controlId="file">
