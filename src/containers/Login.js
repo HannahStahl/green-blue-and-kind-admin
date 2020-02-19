@@ -29,7 +29,7 @@ export default function Login(props) {
     <div className="Login">
       <div className="lander">
         <img
-          alt="Green, Blue, and Kind"
+          alt="Green, Blue + Kind"
           src={`${process.env.PUBLIC_URL}/logo.png`}
           height="100"
         />
