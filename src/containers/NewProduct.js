@@ -165,6 +165,7 @@ export default function NewProduct(props) {
         productOnSale,
         productPublished,
         categoryId,
+        productRank: productsInCategory[productsInCategory.length - 1].productRank + 1,
       });
       await Promise.all([
         saveTags(newProduct.productId),
@@ -172,7 +173,7 @@ export default function NewProduct(props) {
         saveSizes(newProduct.productId),
         savePhotos(newProduct.productId, updatedProductPhotos),
       ]);
-      props.history.push("/");
+      props.history.push(`/categories/${categoryId}`);
     } catch (e) {
       alert(e);
       setIsSaving(false);

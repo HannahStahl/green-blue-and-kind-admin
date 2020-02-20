@@ -28,16 +28,6 @@
   border-left: solid 1px #eee;
 }
 
-.Category .products h4 {
-  line-height: 1.5;
-  margin-bottom: 0px;
-  text-align: center;
-}
-
-.Category .products p {
-  color: #666;
-}
-
 .Category .note {
   margin-bottom: 30px;
   font-style: italic;

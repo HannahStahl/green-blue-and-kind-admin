@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { API } from "aws-amplify";
 import "./Home.css";
-import ItemsList from "../components/ItemsList";
+import DraggableItemsList from "../components/DraggableItemsList";
 import Login from "./Login";
 
 export default function Home(props) {
@@ -30,17 +30,14 @@ export default function Home(props) {
 
   function renderCategoriesList(categories) {
     return (
-      <ItemsList
-        items={categories.map(category => ({
-          id: category.categoryId,
-          name: category.categoryName,
-          photo: category.categoryPhoto,
-          url: `/categories/${category.categoryId}`,
-        }))}
-        newItemUrl="/categories/new"
-        size="large"
-        alignment="center"
-      />
+      <div>
+        <DraggableItemsList
+          itemType='category'
+          itemTypePlural='categories'
+          originalItems={categories}
+          newItemURL='/categories/new'
+        />
+      </div>
     );
   }
 

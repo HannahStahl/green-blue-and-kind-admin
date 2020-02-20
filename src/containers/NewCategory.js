@@ -51,7 +51,9 @@ export default function NewCategory(props) {
     setIsLoading(true);
     try {
       const categoryPhoto = file ? await s3Upload(file) : null;
-      await createCategory({ categoryName, categoryPhoto });
+      await createCategory({
+        categoryName, categoryPhoto, categoryRank: categories[categories.length - 1].categoryRank + 1,
+      });
       props.history.push("/");
     } catch (e) {
       alert(e);

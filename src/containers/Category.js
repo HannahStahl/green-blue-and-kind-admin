@@ -5,7 +5,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import "./Category.css";
-import ItemsList from "../components/ItemsList";
+import DraggableItemsList from "../components/DraggableItemsList";
 import config from '../config';
 
 export default function Category(props) {
@@ -112,6 +112,7 @@ export default function Category(props) {
         categoryName,
         categoryPhoto: categoryPhoto || category.categoryPhoto,
         categoryPublished,
+        categoryRank: category.categoryRank,
       });
       props.history.push("/");
     } catch (e) {
@@ -143,16 +144,11 @@ export default function Category(props) {
 
   function renderProductsList(products) {
     return (
-      <ItemsList
-        items={products.map(product => ({
-          id: product.productId,
-          name: product.productName,
-          photo: product.productPhoto,
-          url: `/products/${product.productId}`,
-        }))}
-        newItemUrl={`/products/new/${category.categoryId}`}
-        size="small"
-        alignment="left"
+      <DraggableItemsList
+        itemType='product'
+        itemTypePlural='products'
+        originalItems={products}
+        newItemURL={`/products/new/${props.match.params.id}`}
       />
     );
   }

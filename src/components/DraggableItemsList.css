@@ -1,0 +1,29 @@
+.DraggableItemsList .item {
+  display: flex;
+  align-items: center;
+  border: solid 1px #eee;
+  padding: 20px;
+  user-select: none;
+  height: 130px;
+  min-width: 350px;
+}
+
+.DraggableItemsList .item-name {
+  color: #333;
+  padding-left: 40px;
+}
+
+.DraggableItemsList .item-name.new-item {
+  padding-left: 20px;
+}
+
+.DraggableItemsList .item-name:hover {
+  color: black;
+  text-decoration: none !important;
+}
+
+.DraggableItemsList .item-photo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}

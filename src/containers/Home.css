@@ -3,14 +3,6 @@
 }
 
 .Home .categories .page-header {
-  justify-content: center;
-}
-
-.Home .categories h4 {
-  text-align: center;
-  line-height: 1.5;
-  margin: 0;
-}
-.Home .categories p {
-  color: #666;
+  border-bottom: none;
+  margin-bottom: 0px;
 }

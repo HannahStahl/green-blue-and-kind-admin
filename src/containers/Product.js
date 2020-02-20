@@ -299,13 +299,14 @@ export default function Product(props) {
           productOnSale,
           productPublished,
           categoryId,
+          productRank: product.productRank,
         }),
         savePhotos(updatedProductPhotos),
         saveTags(),
         saveColors(),
         saveSizes(),
       ]);
-      props.history.push("/");
+      props.history.push(`/categories/${categoryId}`);
     } catch (e) {
       alert(e);
       setIsSaving(false);
@@ -332,7 +333,7 @@ export default function Product(props) {
 
     try {
       await deleteProduct();
-      props.history.push("/");
+      props.history.push(`/categories/${categoryId}`);
     } catch (e) {
       alert(e);
       setIsDeleting(false);
