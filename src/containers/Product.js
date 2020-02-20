@@ -5,8 +5,8 @@ import CreatableSelect from 'react-select/creatable';
 import LoaderButton from "../components/LoaderButton";
 import { s3Upload } from "../libs/awsLib";
 import "./Product.css";
-import PhotoViewer from '../components/PhotoViewer';
 import config from '../config';
+import DraggablePhotosGrid from "../components/DraggablePhotosGrid";
 
 export default function Product(props) {
   const [product, setProduct] = useState(null);
@@ -442,7 +442,7 @@ export default function Product(props) {
                 <Form.Control onChange={handleFileChange} type="file" multiple />
               </Form.Group>
               {productPhotos && productPhotos.length > 0 && (
-                <PhotoViewer updateItems={setProductPhotos} list={productPhotos} />
+                <DraggablePhotosGrid updateItems={setProductPhotos} items={productPhotos} />
               )}
               <Form.Group controlId="productSizes">
                 <Form.Label>Sizes</Form.Label>
