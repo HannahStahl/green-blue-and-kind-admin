@@ -5,6 +5,7 @@
 
 .Category .content {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .Category form {
@@ -23,12 +24,14 @@
   color: transparent;
 }
 
-.Category .products {
-  padding-left: 60px;
-  border-left: solid 1px #eee;
-}
-
 .Category .note {
   margin-bottom: 30px;
   font-style: italic;
+}
+
+@media all and (min-width: 800px) {
+  .Category .products {
+    padding-left: 60px;
+    border-left: solid 1px #eee;
+  }
 }

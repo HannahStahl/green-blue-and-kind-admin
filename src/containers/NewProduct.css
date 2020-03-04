@@ -5,17 +5,24 @@
 .NewProduct .form-fields {
   padding-bottom: 15px;
   display: flex;
+  flex-wrap: wrap;
 }
 
 .NewProduct .form-fields .left-half {
-  padding-right: 60px;
-  min-width: 400px;
+  min-width: 300px;
 }
 
-.NewProduct .form-fields .right-half {
-  padding-left: 60px;
-  border-left: solid 1px #eee;
-  min-width: 500px;
+@media all and (min-width: 800px) {
+  .NewProduct .form-fields .left-half {
+    padding-right: 60px;
+    min-width: 400px;
+  }
+
+  .NewProduct .form-fields .right-half {
+    padding-left: 60px;
+    border-left: solid 1px #eee;
+    min-width: 500px;
+  }
 }
 
 .NewProduct form textarea {
