@@ -7,6 +7,7 @@ import { s3Upload } from "../libs/awsLib";
 import "./Product.css";
 import config from '../config';
 import DraggablePhotosGrid from "../components/DraggablePhotosGrid";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Product(props) {
   const [product, setProduct] = useState(null);
@@ -379,7 +380,7 @@ export default function Product(props) {
           </div>
         )}
       </div>
-      {product && (
+      {!product ? <LoadingSpinner /> : (
         <Form>
           <div className="form-fields">
             <div className="left-half">

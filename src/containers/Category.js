@@ -7,6 +7,7 @@ import { s3Upload } from "../libs/awsLib";
 import "./Category.css";
 import DraggableItemsList from "../components/DraggableItemsList";
 import config from '../config';
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Category(props) {
   const [file, setFile] = useState(null);
@@ -233,7 +234,7 @@ export default function Category(props) {
           </div>
         )}
       </div>
-      {category && (
+      {!category ? <LoadingSpinner /> : (
         <>
           {products.filter((product) => product.productPublished).length === 0 && (
             <p className="note">Categories can be moved out of Draft state once they have at least one published product.</p>
